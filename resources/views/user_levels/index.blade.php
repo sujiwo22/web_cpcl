@@ -18,45 +18,22 @@
                     </div>
 
                     <div class="card-body">
-                        <table class="table table-bordered">
+                        <div class="alert alert-success d-none" id="success-alert"></div>
+                        <table class="table table-bordered" id="tableUserLevel">
                             <thead>
                                 <tr class="bg-primary">
+                                    <th scope="col">No</th>
                                     <th scope="col">User Level</th>
-                                    <th scope="col">User Created</th>
+                                    <th scope="col">Created by</th>
                                     <th scope="col">Created at</th>
                                     <th scope="col" style="width: 20%">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse ($userlevels as $userlevel)
-                                    <tr>
-                                        {{-- <td class="text-center">
-                                            <img src="{{ asset('/storage/userlevels/'.$userlevel->image) }}" class="rounded" style="width: 150px">
-                                        </td> --}}
-                                        <td>{{ $userlevel->level_name }}</td>
-                                        <td>{{ $userlevel->crt_id_user }}</td>
-                                        <td>{{ $userlevel->crteated_at }}</td>
-                                        <td class="text-center">
-                                            <form onsubmit="return confirm('Apakah Anda Yakin ?');"
-                                                action="{{ route('user_level.destroy', $userlevel->id) }}" method="POST">
-                                                <a href="{{ route('user_level.show', $userlevel->id) }}"
-                                                    class="btn btn-sm btn-dark">SHOW</a>
-                                                <a href="{{ route('user_level.edit', $userlevel->id) }}"
-                                                    class="btn btn-sm btn-primary">EDIT</a>
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-danger">HAPUS</button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <div class="alert alert-danger">
-                                        Data Level User belum ada.
-                                    </div>
-                                @endforelse
+
                             </tbody>
                         </table>
-                        {{ $userlevels->links() }}
+
                     </div>
                 </div>
             </div>
@@ -75,20 +52,19 @@
                     <input type="hidden" name="id" id="id">
                     <input type="hidden" name="act" id="act">
                     <div class="modal-body">
+                        <div class="alert alert-warning d-none" id="failed-alert"></div>
+                        {{-- <div id="response-message" style="color: green; margin-bottom: 10px;"></div> --}}
                         <div class="form-group">
-                            <label>Bank *)</label>
-                            <input type="text" name="nama" id="nama" class="form-control" placeholder="Nama Bank"
-                                required autocomplete="off">
-                        </div>
-                        <div class="form-group">
-                            <label>Logo</label>
-                            <input type="file" name="logo" id="logo" class="form-control">
+                            <label>Level Name *)</label>
+                            <input type="text" name="level_name" id="level_name" class="form-control"
+                                placeholder="Level Name" required autocomplete="off">
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default pull-left" data-dismiss="modal"><i
                                 class="fa fa-times-circle"></i> Close</button>
-                        <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Save</button>
+                        <button type="submit" class="btn btn-primary" id="saveBtn"><i class="fa fa-save"></i>
+                            Save</button>
                     </div>
                 </form>
             </div>
@@ -98,12 +74,183 @@
 
 @section('javascript')
     <script type="text/javascript">
+        var table = $('#tableUserLevel').DataTable();
+        $(function() {
+            ajaxList();
+        });
+
+        $('#formCRUD').submit(function(e) {
+            e.preventDefault();
+
+            let formData = new FormData(this);
+            var act = $('#act').val();
+            var url;
+            // if (act == 'save') {
+            url = "/user_level";
+            // } else {
+            //     url = "/user_level.update";
+            // }
+            // Clear previous errors
+            $(this).find('.error-text').text('');
+            $('#success-alert').addClass('d-none').text('');
+            $('#failed-alert').addClass('d-none').text('');
+
+            // Disable button
+            $('#saveBtn').attr('disabled', true);
+
+            $.ajax({
+                type: 'POST',
+                url: url,
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function(data) {
+                    if (data['status']) {
+                        $('#modalForm').modal('hide');
+                        $('#success-alert').removeClass('d-none').text("Data telah berhasil disimpan.");
+                        table.ajax.reload(null, false);
+                    } else {
+                        $('#failed-alert').removeClass('d-none').text(data['message']);
+                    }
+                    // Show success message
+                    // $('#formCRUD').trigger("reset");
+                    // fetch_all_data();
+                },
+                error: function(response) {
+                    if (response.status === 422) {
+                        let errors = response.responseJSON.errors;
+                        $.each(errors, function(key, value) {
+                            $('.' + key + '_error').text(value[0]);
+                        });
+                    } else {
+                        alert('Something went wrong. Please try again.');
+                    }
+                },
+                complete: function() {
+                    // Re-enable button
+                    $('#saveBtn').attr('disabled', false);
+                }
+            });
+        });
+
         function addForm() {
             $('#modalForm').modal('show');
             $('#modalForm .modal-title').html('<i class="fa fa-plus-circle"></i> Add Data');
             $('#modalForm form')[0].reset();
             $('#modalForm #id').val('');
             $('#modalForm #act').val('save');
+        };
+
+        function editData(id) {
+            $('#modalForm').modal('show');
+            $('#modalForm .modal-title').html('<i class="fa fa-edit"></i> Edit Data');
+            $('#modalForm form')[0].reset();
+            $('#modalForm #id').val(id);
+            $('#modalForm #act').val('edit');
+            // var url = "/user_level/show/"+id;
+            var url = "{{ route('user_level.show', ':id') }}";
+            url = url.replace(':id', id);
+            $.ajax({
+                method: 'GET',
+                url: url,
+                success: function(data) {
+                    $('#level_name').val(data.level_name);
+                    // Show success message
+                    // $('#formCRUD').trigger("reset");
+                    // fetch_all_data();
+                },
+                error: function(response) {
+                    alert('Something went wrong. Please try again.');
+
+                },
+                complete: function() {
+                    // Re-enable button
+                    $('#saveBtn').attr('disabled', false);
+                }
+            });
+        };
+
+        function deleteData(id) {
+            if (confirm("Apakah anda yakin akan menghapus data ini?")) {
+                // var url = "/user_level/show/"+id;
+                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                var url = "{{ route('user_level.destroy', ':id') }}";
+                url = url.replace(':id', id);
+                $.ajax({
+                    method: 'delete',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken
+                    },
+                    url: url,
+                    success: function(data) {
+                        table.ajax.reload(null, false);
+                        // $('#level_name').val(data.level_name);
+                        // Show success message
+                        // $('#formCRUD').trigger("reset");
+                        // fetch_all_data();
+                    },
+                    error: function(response) {
+                        alert('Something went wrong. Please try again.');
+
+                    },
+                    complete: function() {
+                        // Re-enable button
+                        $('#saveBtn').attr('disabled', false);
+                    }
+                });
+            }
+        };
+
+        function ajaxList() {
+            table.destroy();
+            table = $('#tableUserLevel').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: "{{ url('user_level') }}",
+                    data: function(d) {
+                        d.name = $('#filter_name').val();
+                        // d.status = $('#filter_status').val();
+                        d.start_date = $('#start_date').val();
+                        d.end_date = $('#end_date').val();
+                    }
+                },
+                columns: [{
+                        data: 'DT_RowIndex',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'level_name'
+                    },
+                    {
+                        data: 'crt_id_user'
+                    },
+                    // {
+                    //     data: 'status_label',
+                    //     orderable: false,
+                    //     searchable: false
+                    // },
+                    {
+                        data: 'created_at'
+                    },
+                    {
+                        data: 'status_label'
+                    },
+                ]
+            });
+
+            $('#filter').click(function() {
+                table.draw();
+            });
+
+            $('#reset').click(function() {
+                $('#filter_name').val('');
+                // $('#filter_status').val('');
+                $('#start_date').val('');
+                $('#end_date').val('');
+                table.draw();
+            });
         }
     </script>
 @endsection

@@ -20,12 +20,15 @@
 
     <link rel="stylesheet" href="{{ asset('vendor/adminlte/dist/css/adminlte.min.css?v=3.2.0') }}">
 
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
 
     <!-- Scripts -->
     <!-- @vite(['resources/sass/app.scss', 'resources/js/app.js']) -->
+    <script src="https://cdn.jsdelivr.net"></script>
 </head>
 
 <body class="hold-transition sidebar-mini">
@@ -230,7 +233,9 @@
     </div>
     {{-- </div> --}}
 </body>
-<script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
+{{-- <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script> --}}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 <!-- Bootstrap -->
 <script src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 <!-- AdminLTE -->
