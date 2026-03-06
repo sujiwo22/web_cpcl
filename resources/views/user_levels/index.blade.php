@@ -224,7 +224,7 @@
                         data: 'level_name'
                     },
                     {
-                        data: 'crt_id_user'
+                        data: 'crt_user_name'
                     },
                     // {
                     //     data: 'status_label',
