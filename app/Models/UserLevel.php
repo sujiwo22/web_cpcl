@@ -11,7 +11,5 @@ class UserLevel extends Model
     protected $table = 'user_levels';
 
     protected $fillable = ['level_name', 'crt_id_user', 'upd_id_user','del_id_user'];
-
-    var $view = 'user_level_view';
     //
 }

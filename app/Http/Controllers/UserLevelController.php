@@ -18,11 +18,8 @@ class UserLevelController extends Controller
 
     public function index(Request $request)
     {
-        if ($request->ajax()) {
-
-            $query = UserLevel::query()->join('users','user_levels.crt_id_user','=','users.id')
-                ->select('user_levels.id', 'user_levels.level_name', 'users.name AS crt_user_name', 'user_levels.created_at');
-            
+        if ($request->ajax()) {            
+            $query = DB::table('user_level_views')->select('id','level_name','crt_user_name','created_at');
             return DataTables::of($query)
                 ->filter(function ($query) use ($request) {
 
@@ -174,5 +171,8 @@ class UserLevelController extends Controller
         return $response;
     }
 
-    public function ajax_list() {}
+    public function list() {
+        $user_level = UserLevel::withoutTrashed()->get();
+        return $user_level;
+    }
 }
