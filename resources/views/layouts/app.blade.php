@@ -21,7 +21,7 @@
     <link rel="stylesheet" href="{{ asset('vendor/adminlte/dist/css/adminlte.min.css?v=3.2.0') }}">
 
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
-    
+
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
@@ -240,5 +240,130 @@
 <script src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 <!-- AdminLTE -->
 <script src="{{ asset('vendor/adminlte/dist/js/adminlte.min.js') }}"></script>
+<script>
+    function list_provinsi(object, hasil = null) {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        var url = "{{ route('provinsi.list') }}";
+        // url = url.replace(':id', id);
+        $.ajax({
+            method: 'GET',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken
+            },
+            url: url,
+            before: function() {
+                $('#' + object).empty();
+                $('#' + object).append('<option value="">Wait...</option>')
+            },
+            success: function(data) {
+                $('#' + object).empty();
+                $('#' + object).append('<option value="">[Please Select]</option>')
+                $.each(data, function(key, value) {
+                    if (hasil != null) {
+                        if (hasil == value.id_provinsi) {
+                            $('#' + object).append('<option value="' + value.id_provinsi + '" selected>' +
+                                value.nama_provinsi +
+                                '</option>');
+                        } else {
+                            $('#' + object).append('<option value="' + value.id_provinsi + '">' + value
+                                .nama_provinsi +
+                                '</option>');
+                        }
+                    } else {
+                        $('#' + object).append('<option value="' + value.id_provinsi + '">' + value
+                            .nama_provinsi +
+                            '</option>');
+                    }
+                });
+            },
+            error: function(response) {
+                $('#' + object).empty();
+            }
+        });
+    };
+    
+    function list_kota(object,id_provinsi, hasil = null) {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        var url = "{{ route('kota.list',':id') }}";
+        url = url.replace(':id', id_provinsi);
+        $.ajax({
+            method: 'GET',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken
+            },
+            url: url,
+            before: function() {
+                $('#' + object).empty();
+                $('#' + object).append('<option value="">Wait...</option>')
+            },
+            success: function(data) {
+                $('#' + object).empty();
+                $('#' + object).append('<option value="">[Please Select]</option>')
+                $.each(data, function(key, value) {
+                    if (hasil != null) {
+                        if (hasil == value.id_kota) {
+                            $('#' + object).append('<option value="' + value.id_kota + '" selected>' +
+                                value.nama_kota +
+                                '</option>');
+                        } else {
+                            $('#' + object).append('<option value="' + value.id_kota + '">' + value
+                                .nama_kota +
+                                '</option>');
+                        }
+                    } else {
+                        $('#' + object).append('<option value="' + value.id_kota + '">' + value
+                            .nama_kota +
+                            '</option>');
+                    }
+                });
+            },
+            error: function(response) {
+                $('#' + object).empty();
+            }
+        });
+    };
+    
+    function list_kecamatan(object,id_kota, hasil = null) {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        var url = "{{ route('kecamatan.list',':id') }}";
+        url = url.replace(':id', id_kota);
+        $.ajax({
+            method: 'GET',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken
+            },
+            url: url,
+            before: function() {
+                $('#' + object).empty();
+                $('#' + object).append('<option value="">Wait...</option>')
+            },
+            success: function(data) {
+                $('#' + object).empty();
+                $('#' + object).append('<option value="">[Please Select]</option>')
+                $.each(data, function(key, value) {
+                    if (hasil != null) {
+                        if (hasil == value.id_kecamatan) {
+                            $('#' + object).append('<option value="' + value.id_kecamatan + '" selected>' +
+                                value.nama_kecamatan +
+                                '</option>');
+                        } else {
+                            $('#' + object).append('<option value="' + value.id_kecamatan + '">' + value
+                                .nama_kecamatan +
+                                '</option>');
+                        }
+                    } else {
+                        $('#' + object).append('<option value="' + value.id_kecamatan + '">' + value
+                            .nama_kecamatan +
+                            '</option>');
+                    }
+                });
+            },
+            error: function(response) {
+                $('#' + object).empty();
+            }
+        });
+    };
+</script>
 @yield('javascript')
+
 </html>
