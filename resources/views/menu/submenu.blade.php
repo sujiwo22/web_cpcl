@@ -1,13 +1,23 @@
 <!-- resources/views/menu/submenu.blade.php -->
 <ul class="nav nav-treeview">
     @foreach ($menus as $menu)
-        <li class="nav-item">
+        @php
+            $isActive = request()->is($menu->url) || request()->is($menu->url . '/*');
+            // Check if any child is active if this is a parent
+            if (!$isActive && $menu->children->count()) {
+                $isActive = $menu->children->contains(function ($child) {
+                    return request()->is($child->url) || request()->is($child->url . '/*');
+                });
+            }
+        @endphp
+
+        <li class="nav-item @if($isActive) menu-open @endif">
             @if (count($menu->children) > 0)
-                @php($url = "#")
+                @php($url = '#')
             @else
                 @php($url = url($menu->url))
             @endif
-            <a href="{{ $url }}" class="nav-link">
+            <a class="nav-link @if($isActive) active @endif" href="{{ $url }}">
                 <i class="far fa-circle nav-icon"></i>
                 <p>{{ $menu->name }}
                     @if (count($menu->children))

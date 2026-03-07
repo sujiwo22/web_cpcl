@@ -1,14 +1,25 @@
 <!-- resources/views/menu/main_menu.blade.php -->
 <nav class="mt-2">
-    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+    <ul class="nav nav-pills nav-sidebar flex-column" data-accordion="false" data-widget="treeview" role="menu">
         @foreach ($menuItems as $menuItem)
-            <li class="nav-item">
+            @php
+                // $isActive = request()->is($menuItem->url) || request()->is($menuItem->url . '/*');
+                // // Check if any child is active if this is a parent
+                // if (!$isActive && $menuItem->children->count()) {
+                //     $isActive = $menuItem->children->contains(function ($child) {
+                //         return request()->is($child->url) || request()->is($child->url . '/*');
+                //     });
+                // }
+                $isActive = checkActiveMenu($menuItem);
+            @endphp
+
+            <li class="nav-item @if ($isActive) menu-open @endif">
                 @if (count($menuItem->children) > 0)
                     @php($url = '#')
                 @else
                     @php($url = url($menuItem->url))
                 @endif
-                <a href="{{ $url }}" class="nav-link">
+                <a class="nav-link @if ($isActive) active @endif" href="{{ $url }}">
                     <i class="nav-icon fas fa-tachometer-alt"></i>
                     <p>{{ $menuItem->name }}
                         @if (count($menuItem->children))
