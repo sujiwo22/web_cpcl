@@ -142,4 +142,14 @@ class DirjenController extends Controller
 
         return $response;
     }
+
+    public function list(string $id_kementrian)
+    {
+        if ($id_kementrian != null) {
+            $result = Dirjen::where(['id_kementrian' => $id_kementrian])->get();
+        } else {
+            $result = Dirjen::withoutTrashed()->get();
+        }
+        return $result;
+    }
 }
