@@ -8,8 +8,18 @@ use App\Http\Controllers\ProvinsiController;
 use App\Http\Controllers\KotaController;
 use App\Http\Controllers\KecamatanController;
 use App\Http\Controllers\KelurahanController;
+use App\Http\Controllers\TpsController;
+use App\Http\Controllers\KementrianController;
+use App\Http\Controllers\DirjenController;
+use App\Http\Controllers\ProgramController;
+use App\Http\Controllers\KelompokController;
+use App\Http\Controllers\AnggotaController;
+use App\Http\Controllers\JabatanController;
 use App\Mail\SendEmail;
+use App\Models\Anggota;
+use App\Models\Jabatan;
 use App\Models\Kecamatan;
+use App\Models\Kementrian;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 
@@ -50,20 +60,70 @@ Route::middleware('auth')->group(function () {
     Route::get('/kota/{id}', [KotaController::class, 'show'])->name('kota.show');
     Route::delete('/kota/{id}', [KotaController::class, 'destroy'])->name('kota.destroy');
     Route::get('/list_kota/{id}', [KotaController::class, 'list'])->name('kota.list');
-    
+
     // Kecamatan
     Route::get('/kecamatan', [KecamatanController::class, 'index'])->name('kecamatan');
     Route::post('/kecamatan', [KecamatanController::class, 'store'])->name('kecamatan.store');
     Route::get('/kecamatan/{id}', [KecamatanController::class, 'show'])->name('kecamatan.show');
     Route::delete('/kecamatan/{id}', [KecamatanController::class, 'destroy'])->name('kecamatan.destroy');
     Route::get('/list_kecamatan/{id}', [KecamatanController::class, 'list'])->name('kecamatan.list');
-    
+
     // Kelurahan
     Route::get('/kelurahan', [KelurahanController::class, 'index'])->name('kelurahan');
     Route::post('/kelurahan', [KelurahanController::class, 'store'])->name('kelurahan.store');
     Route::get('/kelurahan/{id}', [KelurahanController::class, 'show'])->name('kelurahan.show');
     Route::delete('/kelurahan/{id}', [KelurahanController::class, 'destroy'])->name('kelurahan.destroy');
     Route::get('/list_kelurahan/{id}', [KelurahanController::class, 'list'])->name('kelurahan.list');
+
+    // TPS
+    Route::get('/tps', [TpsController::class, 'index'])->name('tps');
+    Route::post('/tps', [TpsController::class, 'store'])->name('tps.store');
+    Route::get('/tps/{id}', [TpsController::class, 'show'])->name('tps.show');
+    Route::delete('/tps/{id}', [TpsController::class, 'destroy'])->name('tps.destroy');
+    Route::post('/list_tps', [TpsController::class, 'list'])->name('tps.list');
+
+    // Kementrian
+    Route::get('/kementrian', [KementrianController::class, 'index'])->name('kementrian');
+    Route::post('/kementrian', [KementrianController::class, 'store'])->name('kementrian.store');
+    Route::get('/kementrian/{id}', [KementrianController::class, 'show'])->name('kementrian.show');
+    Route::delete('/kementrian/{id}', [KementrianController::class, 'destroy'])->name('kementrian.destroy');
+    Route::get('/list_kementrian', [KementrianController::class, 'list'])->name('kementrian.list');
+
+    // Dirjen
+    Route::get('/dirjen', [DirjenController::class, 'index'])->name('dirjen');
+    Route::post('/dirjen', [DirjenController::class, 'store'])->name('dirjen.store');
+    Route::get('/dirjen/{id}', [DirjenController::class, 'show'])->name('dirjen.show');
+    Route::delete('/dirjen/{id}', [DirjenController::class, 'destroy'])->name('dirjen.destroy');
+    Route::get('/list_dirjen/{id}', [DirjenController::class, 'list'])->name('dirjen.list');
+
+    // Program
+    Route::get('/program', [ProgramController::class, 'index'])->name('program');
+    Route::post('/program', [ProgramController::class, 'store'])->name('program.store');
+    Route::get('/program/{id}', [ProgramController::class, 'show'])->name('program.show');
+    Route::delete('/program/{id}', [ProgramController::class, 'destroy'])->name('program.destroy');
+    Route::get('/list_program', [ProgramController::class, 'list'])->name('program.list');
+
+    // Kelompok Masyarakat
+    Route::get('/kelompok_daftar', [KelompokController::class, 'index'])->name('kelompok_daftar');
+    Route::post('/kelompok_daftar', [KelompokController::class, 'store'])->name('kelompok_daftar.store');
+    Route::get('/kelompok_daftar/{id}', [KelompokController::class, 'show'])->name('kelompok_daftar.show');
+    Route::delete('/kelompok_daftar/{id}', [KelompokController::class, 'destroy'])->name('kelompok_daftar.destroy');
+    Route::get('/list_kelompok_daftar/{id}', [KelompokController::class, 'list'])->name('kelompok_daftar.list');
+
+    // Kelompok Anggota
+    Route::get('/kelompok_anggota', [AnggotaController::class, 'index'])->name('kelompok_anggota');
+    // Route::get('/kelompok_anggota_utama', [AnggotaController::class, 'index'])->name('kelompok_anggota');
+    Route::post('/kelompok_anggota', [AnggotaController::class, 'store'])->name('kelompok_anggota.store');
+    Route::get('/kelompok_anggota_show/{id}', [AnggotaController::class, 'show'])->name('kelompok_anggota.show');
+    Route::delete('/kelompok_anggota/{id}', [AnggotaController::class, 'destroy'])->name('kelompok_anggota.destroy');
+    Route::get('/list_kelompok_anggota', [AnggotaController::class, 'list'])->name('kelompok_anggota.list');
+
+    // Jabatan
+    Route::get('/jabatan', [JabatanController::class, 'index'])->name('jabatan');
+    Route::post('/jabatan', [JabatanController::class, 'store'])->name('jabatan.store');
+    Route::get('/jabatan/{id}', [JabatanController::class, 'show'])->name('jabatan.show');
+    Route::delete('/jabatan/{id}', [JabatanController::class, 'destroy'])->name('jabatan.destroy');
+    Route::get('/list_jabatan', [JabatanController::class, 'list'])->name('jabatan.list');
 });
 
 Route::get('/send-email', function () {
