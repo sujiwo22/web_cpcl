@@ -281,8 +281,8 @@
             }
         });
     };
-    
-    function list_kota(object,id_provinsi, hasil = null) {
+
+    function list_kota(object, id_provinsi, hasil = null) {
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
         var url = "{{ route('kota.list',':id') }}";
         url = url.replace(':id', id_provinsi);
@@ -322,8 +322,8 @@
             }
         });
     };
-    
-    function list_kecamatan(object,id_kota, hasil = null) {
+
+    function list_kecamatan(object, id_kota, hasil = null) {
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
         var url = "{{ route('kecamatan.list',':id') }}";
         url = url.replace(':id', id_kota);
@@ -354,6 +354,171 @@
                     } else {
                         $('#' + object).append('<option value="' + value.id_kecamatan + '">' + value
                             .nama_kecamatan +
+                            '</option>');
+                    }
+                });
+            },
+            error: function(response) {
+                $('#' + object).empty();
+            }
+        });
+    };
+
+    function list_kelurahan(object, id_kecamatan, hasil = null) {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        var url = "{{ route('kelurahan.list',':id') }}";
+        url = url.replace(':id', id_kecamatan);
+        $.ajax({
+            method: 'GET',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken
+            },
+            url: url,
+            before: function() {
+                $('#' + object).empty();
+                $('#' + object).append('<option value="">Wait...</option>')
+            },
+            success: function(data) {
+                $('#' + object).empty();
+                $('#' + object).append('<option value="">[Please Select]</option>')
+                $.each(data, function(key, value) {
+                    if (hasil != null) {
+                        if (hasil == value.id_kelurahan) {
+                            $('#' + object).append('<option value="' + value.id_kelurahan + '" selected>' +
+                                value.nama_kelurahan +
+                                '</option>');
+                        } else {
+                            $('#' + object).append('<option value="' + value.id_kelurahan + '">' + value
+                                .nama_kelurahan +
+                                '</option>');
+                        }
+                    } else {
+                        $('#' + object).append('<option value="' + value.id_kelurahan + '">' + value
+                            .nama_kelurahan +
+                            '</option>');
+                    }
+                });
+            },
+            error: function(response) {
+                $('#' + object).empty();
+            }
+        });
+    };
+
+    function list_kementrian(object, hasil = null) {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        var url = "{{ route('kementrian.list') }}";
+        $.ajax({
+            method: 'GET',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken
+            },
+            url: url,
+            before: function() {
+                $('#' + object).empty();
+                $('#' + object).append('<option value="">Wait...</option>')
+            },
+            success: function(data) {
+                $('#' + object).empty();
+                $('#' + object).append('<option value="">[Please Select]</option>')
+                $.each(data, function(key, value) {
+                    if (hasil != null) {
+                        if (hasil == value.id) {
+                            $('#' + object).append('<option value="' + value.id + '" selected>' +
+                                value.nama_kementrian +
+                                '</option>');
+                        } else {
+                            $('#' + object).append('<option value="' + value.id + '">' + value
+                                .nama_kementrian +
+                                '</option>');
+                        }
+                    } else {
+                        $('#' + object).append('<option value="' + value.id + '">' + value
+                            .nama_kementrian +
+                            '</option>');
+                    }
+                });
+            },
+            error: function(response) {
+                $('#' + object).empty();
+            }
+        });
+    };
+
+    function list_kelompok(object, id_kelurahan = null, hasil = null) {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+         var url = "{{ route('kelompok_daftar.list',':id') }}";
+        url = url.replace(':id', id_kelurahan);
+        $.ajax({
+            method: 'GET',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken
+            },
+            url: url,
+            // data: {
+            //     id_kelurahan: id_kelurahan
+            // },
+            before: function() {
+                $('#' + object).empty();
+                $('#' + object).append('<option value="">Wait...</option>')
+            },
+            success: function(data) {
+                $('#' + object).empty();
+                $('#' + object).append('<option value="">[Please Select]</option>')
+                $.each(data, function(key, value) {
+                    if (hasil != null) {
+                        if (hasil == value.id) {
+                            $('#' + object).append('<option value="' + value.id + '" selected>' +
+                                value.nama_kelompok +
+                                '</option>');
+                        } else {
+                            $('#' + object).append('<option value="' + value.id + '">' + value
+                                .nama_kelompok +
+                                '</option>');
+                        }
+                    } else {
+                        $('#' + object).append('<option value="' + value.id + '">' + value
+                            .nama_kelompok +
+                            '</option>');
+                    }
+                });
+            },
+            error: function(response) {
+                $('#' + object).empty();
+            }
+        });
+    };
+
+    function list_jabatan(object, hasil = null) {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        var url = "{{ route('jabatan.list') }}";
+        $.ajax({
+            method: 'GET',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken
+            },
+            url: url,
+            before: function() {
+                $('#' + object).empty();
+                $('#' + object).append('<option value="">Wait...</option>')
+            },
+            success: function(data) {
+                $('#' + object).empty();
+                $('#' + object).append('<option value="">[Please Select]</option>')
+                $.each(data, function(key, value) {
+                    if (hasil != null) {
+                        if (hasil == value.id) {
+                            $('#' + object).append('<option value="' + value.id + '" selected>' +
+                                value.nama_jabatan +
+                                '</option>');
+                        } else {
+                            $('#' + object).append('<option value="' + value.id + '">' + value
+                                .nama_jabatan +
+                                '</option>');
+                        }
+                    } else {
+                        $('#' + object).append('<option value="' + value.id + '">' + value
+                            .nama_jabatan +
                             '</option>');
                     }
                 });
