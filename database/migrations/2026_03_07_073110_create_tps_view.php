@@ -15,7 +15,7 @@ return new class extends Migration
         DB::statement("
             CREATE VIEW tps_view 
             AS
-            SELECT a.*,a2.nama_kelurahan, b.nama_kecamatan,b.id_kota, c.nama_kota,c.id_provinsi,d.nama_provinsi, e.name crt_user_name,f.name upd_user_name 
+            SELECT a.*,a2.nama_kelurahan,b.id_kecamatan, b.nama_kecamatan,b.id_kota, c.nama_kota,c.id_provinsi,d.nama_provinsi, e.name crt_user_name,f.name upd_user_name 
             FROM tps a
             JOIN kelurahans a2 ON a.id_kelurahan=a2.id_kelurahan
             JOIN kecamatans b ON a2.id_kecamatan=b.id_kecamatan 
