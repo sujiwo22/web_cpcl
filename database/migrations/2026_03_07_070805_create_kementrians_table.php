@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('kementrians', function (Blueprint $table) {
             $table->id();
             $table->string('nama_kementrian');
+            $table->string('singkatan');
             $table->integer('crt_id_user');
             $table->integer('upd_id_user')->nullable()->default(null);
             $table->integer('del_id_user')->nullable()->default(null);
