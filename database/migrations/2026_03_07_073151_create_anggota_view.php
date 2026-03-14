@@ -15,8 +15,10 @@ return new class extends Migration
         DB::statement("
             CREATE VIEW anggota_view 
             AS
-            SELECT a.*,a1.nama_kelompok, a2.nama_kelurahan, b.nama_kecamatan,b.id_kota, c.nama_kota,c.id_provinsi,d.nama_provinsi, e.name crt_user_name,f.name upd_user_name 
+            SELECT a.*,a0.nama_jabatan,a1.nama_kelompok, a2.nama_kelurahan,b.id_kecamatan, b.nama_kecamatan,b.id_kota, c.nama_kota,c.id_provinsi,d.nama_provinsi, e.name crt_user_name,f.name upd_user_name,
+            CONCAT(a.alamat,', Kel/Desa: ',a2.nama_kelurahan,', Kec: ',b.nama_kecamatan,', Kab/Kota: ',c.nama_kota,', Prov: ',d.nama_provinsi) alamat_lengkap_anggota  
             FROM anggotas a 
+            JOIN jabatans a0 ON a.id_jabatan=a0.id
             JOIN kelompoks a1 ON a.id_kelompok=a1.id
             JOIN kelurahans a2 ON a1.id_kelurahan=a2.id_kelurahan
             JOIN kecamatans b ON a2.id_kecamatan=b.id_kecamatan 
