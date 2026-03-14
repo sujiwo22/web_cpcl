@@ -528,6 +528,127 @@
             }
         });
     };
+    
+    function list_program(object, hasil = null) {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        var url = "{{ route('program.list') }}";
+        $.ajax({
+            method: 'GET',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken
+            },
+            url: url,
+            before: function() {
+                $('#' + object).empty();
+                $('#' + object).append('<option value="">Wait...</option>')
+            },
+            success: function(data) {
+                $('#' + object).empty();
+                $('#' + object).append('<option value="">[Please Select]</option>')
+                $.each(data, function(key, value) {
+                    if (hasil != null) {
+                        if (hasil == value.id) {
+                            $('#' + object).append('<option value="' + value.id + '" selected>' +
+                                value.nama_program +
+                                '</option>');
+                        } else {
+                            $('#' + object).append('<option value="' + value.id + '">' + value
+                                .nama_program +
+                                '</option>');
+                        }
+                    } else {
+                        $('#' + object).append('<option value="' + value.id + '">' + value
+                            .nama_program +
+                            '</option>');
+                    }
+                });
+            },
+            error: function(response) {
+                $('#' + object).empty();
+            }
+        });
+    };
+
+    function list_dirjen (object, id_kementrian, hasil = null) {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        var url = "{{ route('dirjen.list',':id') }}";
+        url = url.replace(':id', id_kementrian);
+        $.ajax({
+            method: 'GET',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken
+            },
+            url: url,
+            before: function() {
+                $('#' + object).empty();
+                $('#' + object).append('<option value="">Wait...</option>')
+            },
+            success: function(data) {
+                $('#' + object).empty();
+                $('#' + object).append('<option value="">[Please Select]</option>')
+                $.each(data, function(key, value) {
+                    if (hasil != null) {
+                        if (hasil == value.id) {
+                            $('#' + object).append('<option value="' + value.id + '" selected>' +
+                                value.nama_dirjen +
+                                '</option>');
+                        } else {
+                            $('#' + object).append('<option value="' + value.id + '">' + value
+                                .nama_dirjen +
+                                '</option>');
+                        }
+                    } else {
+                        $('#' + object).append('<option value="' + value.id + '">' + value
+                            .nama_dirjen +
+                            '</option>');
+                    }
+                });
+            },
+            error: function(response) {
+                $('#' + object).empty();
+            }
+        });
+    };
+
+    function list_pic(object, hasil = null) {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        var url = "{{ route('pic.list') }}";
+        $.ajax({
+            method: 'GET',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken
+            },
+            url: url,
+            before: function() {
+                $('#' + object).empty();
+                $('#' + object).append('<option value="">Wait...</option>')
+            },
+            success: function(data) {
+                $('#' + object).empty();
+                $('#' + object).append('<option value="">[Please Select]</option>')
+                $.each(data, function(key, value) {
+                    if (hasil != null) {
+                        if (hasil == value.id) {
+                            $('#' + object).append('<option value="' + value.id + '" selected>' +
+                                value.nama_pic +
+                                '</option>');
+                        } else {
+                            $('#' + object).append('<option value="' + value.id + '">' + value
+                                .nama_pic +
+                                '</option>');
+                        }
+                    } else {
+                        $('#' + object).append('<option value="' + value.id + '">' + value
+                            .nama_pic +
+                            '</option>');
+                    }
+                });
+            },
+            error: function(response) {
+                $('#' + object).empty();
+            }
+        });
+    };
 </script>
 @yield('javascript')
 
