@@ -15,11 +15,14 @@ use App\Http\Controllers\ProgramController;
 use App\Http\Controllers\KelompokController;
 use App\Http\Controllers\AnggotaController;
 use App\Http\Controllers\JabatanController;
+use App\Http\Controllers\ProgramAlokasiController;
+use App\Http\Controllers\PicController;
 use App\Mail\SendEmail;
 use App\Models\Anggota;
 use App\Models\Jabatan;
 use App\Models\Kecamatan;
 use App\Models\Kementrian;
+use App\Models\ProgramAlokasi;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 
@@ -124,6 +127,20 @@ Route::middleware('auth')->group(function () {
     Route::get('/jabatan/{id}', [JabatanController::class, 'show'])->name('jabatan.show');
     Route::delete('/jabatan/{id}', [JabatanController::class, 'destroy'])->name('jabatan.destroy');
     Route::get('/list_jabatan', [JabatanController::class, 'list'])->name('jabatan.list');
+
+    // Alokasi Program
+    Route::get('/alokasi_program', [ProgramAlokasiController::class, 'index'])->name('alokasi_program');
+    Route::post('/alokasi_program', [ProgramAlokasiController::class, 'store'])->name('alokasi_program.store');
+    Route::get('/alokasi_program/{id}', [ProgramAlokasiController::class, 'show'])->name('alokasi_program.show');
+    Route::delete('/alokasi_program/{id}', [ProgramAlokasiController::class, 'destroy'])->name('alokasi_program.destroy');
+    Route::get('/list_alokasi_program', [ProgramAlokasiController::class, 'list'])->name('alokasi_program.list');
+
+    // PIC
+    Route::get('/pic', [PicController::class, 'index'])->name('pic');
+    Route::post('/pic', [PicController::class, 'store'])->name('pic.store');
+    Route::get('/pic/{id}', [PicController::class, 'show'])->name('pic.show');
+    Route::delete('/pic/{id}', [PicController::class, 'destroy'])->name('pic.destroy');
+    Route::get('/list_pic', [PicController::class, 'list'])->name('pic.list');
 });
 
 Route::get('/send-email', function () {
