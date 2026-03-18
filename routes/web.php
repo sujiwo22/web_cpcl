@@ -17,6 +17,9 @@ use App\Http\Controllers\AnggotaController;
 use App\Http\Controllers\JabatanController;
 use App\Http\Controllers\ProgramAlokasiController;
 use App\Http\Controllers\PicController;
+use App\Http\Controllers\ProposalController;
+use App\Http\Controllers\FileController;
+use App\Http\Controllers\ReportRekapUsulanProgramController;
 use App\Mail\SendEmail;
 use App\Models\Anggota;
 use App\Models\Jabatan;
@@ -120,6 +123,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/kelompok_anggota_show/{id}', [AnggotaController::class, 'show'])->name('kelompok_anggota.show');
     Route::delete('/kelompok_anggota/{id}', [AnggotaController::class, 'destroy'])->name('kelompok_anggota.destroy');
     Route::get('/list_kelompok_anggota', [AnggotaController::class, 'list'])->name('kelompok_anggota.list');
+    Route::post('/upload_data_anggota', [AnggotaController::class, 'previewDataExcel'])->name('kelompok_anggota.upload_data');
+    Route::post('/upload_data_anggota_process', [AnggotaController::class, 'uploadDataExcel'])->name('kelompok_anggota.upload_data_process');
 
     // Jabatan
     Route::get('/jabatan', [JabatanController::class, 'index'])->name('jabatan');
@@ -141,6 +146,22 @@ Route::middleware('auth')->group(function () {
     Route::get('/pic/{id}', [PicController::class, 'show'])->name('pic.show');
     Route::delete('/pic/{id}', [PicController::class, 'destroy'])->name('pic.destroy');
     Route::get('/list_pic', [PicController::class, 'list'])->name('pic.list');
+
+    // Proposal
+    Route::get('/proposal', [ProposalController::class, 'index'])->name('proposal');
+    Route::post('/proposal', [ProposalController::class, 'store'])->name('proposal.store');
+    Route::get('/proposal/{id}', [ProposalController::class, 'show'])->name('proposal.show');
+    Route::delete('/proposal/{id}', [ProposalController::class, 'destroy'])->name('proposal.destroy');
+    Route::get('/list_proposal', [ProposalController::class, 'list'])->name('proposal.list');
+    Route::get('/proposal_generate_excel/{id}', [ProposalController::class, 'downloadExcel'])->name('proposal.download_excel');
+
+
+    Route::get('/view-file/{filename}', [FileController::class, 'viewFile'])->name('view.file');
+    Route::get('/download-file/{filename}', [FileController::class, 'downloadFile'])->name('download.file');
+
+    // Report Rekap Usulan Program
+    Route::get('/report_rekap_usulan_program', [ReportRekapUsulanProgramController::class, 'index'])->name('report_rekap_usulan_program');
+    Route::post('/report_rekap_usulan_program_view', [ReportRekapUsulanProgramController::class, 'viewReport'])->name('report_rekap_usulan_program_view');
 });
 
 Route::get('/send-email', function () {

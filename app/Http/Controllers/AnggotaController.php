@@ -4,11 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Models\Kelompok;
 use App\Models\Anggota;
+use App\Models\Jabatan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use LDAP\Result;
 use Yajra\DataTables\Facades\DataTables;
+// use App\Controllers\BaseController;
+use Illuminate\Support\Facades\Validator;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use Carbon\Carbon;
 
 
 class AnggotaController extends Controller
@@ -149,7 +155,7 @@ class AnggotaController extends Controller
      */
     public function show(string $id)
     {
-        $result = DB::table(Anggota::$view)->where('id',$id)->first();
+        $result = DB::table(Anggota::$view)->where('id', $id)->first();
         return $result;
     }
 
@@ -193,5 +199,85 @@ class AnggotaController extends Controller
 
 
         return $response;
+    }
+
+    public function list(string $idKelompok)
+    {
+        $result = DB::table(Anggota::$view)->where(['id_kelompok' => $idKelompok])->get();
+        return $result;
+    }
+
+    function previewDataExcel(Request $request)
+    {
+        $file = $request->file('file');
+        $validator = Validator::make($request->all(), [
+            'file' => 'required|mimes:xlsx,xls,csv',
+        ]);
+        $filePath = $file->getPathname();
+        try {
+            $spreadsheet = IOFactory::load($filePath);
+            $worksheet = $spreadsheet->getActiveSheet();
+            $sheetData = $worksheet->toArray(null, true, true, true);
+            ob_start();
+            $data['sheetData'] = $sheetData;
+            echo view('anggotas.preview', $data);
+            $content = ob_get_clean();
+            return ['status' => true, 'html' => response($content)];
+        } catch (\PhpOffice\PhpSpreadsheet\Reader\Exception $e) {
+            return ['status' => false, 'message' => 'Error reading spreadsheet file' . $e->getMessage()];
+        }
+    }
+
+    function uploadDataExcel(Request $request)
+    {
+        $idUser = Auth::id();
+        $file = $request->file('file');
+        $id_kelompok = $request->id_kelompok;
+        $validator = Validator::make($request->all(), [
+            'file' => 'required|mimes:xlsx,xls,csv',
+        ]);
+        $filePath = $file->getPathname();
+        try {
+            $spreadsheet = IOFactory::load($filePath);
+            $worksheet = $spreadsheet->getActiveSheet();
+            $sheetData = $worksheet->toArray(null, true, true, true);
+            $kelompok = DB::table(Kelompok::$view)->where('id', $id_kelompok)->first();
+            $data_save = [];
+            foreach (array_slice($sheetData, 1) as $sd) {
+                $row_data = [];
+                $jabatan = $sd['D'] == '' ? 'Anggota' : $sd['D'];
+                $cekJab = Jabatan::where('nama_jabatan', $jabatan)->first();
+                if ($cekJab->count() == 0) {
+                    $saveJabatan = Jabatan::create([
+                        'nama_jabatan' => $jabatan,
+                        'crt_id_user' => $idUser,
+                    ]);
+                    $id_jabatan = $saveJabatan->id;
+                } else {
+                    $id_jabatan = $cekJab->id;
+                }
+                $row_data = [
+                    'nik' => $sd['C'],
+                    'nama_anggota' => $sd['B'],
+                    'id_jabatan' => $id_jabatan,
+                    'no_hp' => $sd['E'],
+                    'alamat' => $sd['F'],
+                    'id_kelompok' => $id_kelompok,
+                    'id_kelurahan' => $kelompok->id_kelurahan,
+                    'crt_id_user' => $idUser,
+                    'created_at' => Carbon::now()
+                ];
+                $data_save[] = $row_data;
+            }
+            $saveAll = Anggota::insert($data_save);
+            if ($saveAll) {
+                return ['status' => true];
+            } else {
+                return ['status' => false];
+            }
+            // return ['status' => true, 'html' => response($content)];
+        } catch (\PhpOffice\PhpSpreadsheet\Reader\Exception $e) {
+            return ['status' => false, 'message' => 'Error reading spreadsheet file' . $e->getMessage()];
+        }
     }
 }

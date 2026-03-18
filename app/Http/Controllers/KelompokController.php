@@ -19,32 +19,59 @@ class KelompokController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
+            $action = $request->action;
             $query = DB::table(Kelompok::$view)->select('*');
-            return DataTables::of($query)
-                ->filter(function ($query) use ($request) {
-                    if ($request->filled('id_provinsi')) {
-                        $query->where('id_provinsi', $request->id_provinsi);
-                    }
-                    if ($request->filled('id_kota')) {
-                        $query->where('id_kota', $request->id_kota);
-                    }
-                    if ($request->filled('id_kecamatan')) {
-                        $query->where('id_kecamatan', $request->id_kecamatan);
-                    }
-                    if ($request->filled('id_kelurahan')) {
-                        $query->where('id_kelurahan', $request->id_kelurahan);
-                    }
-                }, true)
-                ->addIndexColumn()
-                ->addColumn('action_button', function ($row) {
-                    return '<div class="btn-group center">
+            if ($action == 'search') {
+                return DataTables::of($query)
+                    ->filter(function ($query) use ($request) {
+                        if ($request->filled('id_provinsi')) {
+                            $query->where('id_provinsi', $request->id_provinsi);
+                        }
+                        if ($request->filled('id_kota')) {
+                            $query->where('id_kota', $request->id_kota);
+                        }
+                        if ($request->filled('id_kecamatan')) {
+                            $query->where('id_kecamatan', $request->id_kecamatan);
+                        }
+                        if ($request->filled('id_kelurahan')) {
+                            $query->where('id_kelurahan', $request->id_kelurahan);
+                        }
+                    }, true)
+                    ->addIndexColumn()
+                    ->addColumn('action_button', function ($row) {
+                        return '<div class="btn-group center">
+                            <div class="btn btn-sm btn-success" id="btnSelect" onclick="selectDataKelompok(' . $row->id . ',`' . $row->nama_kelompok . '`)"><i class="fa fa-check-circle"></i></div>
+                        </div>';
+                    })
+                    ->rawColumns(['action_button'])
+                    ->make(true);
+            } else {
+                return DataTables::of($query)
+                    ->filter(function ($query) use ($request) {
+                        if ($request->filled('id_provinsi')) {
+                            $query->where('id_provinsi', $request->id_provinsi);
+                        }
+                        if ($request->filled('id_kota')) {
+                            $query->where('id_kota', $request->id_kota);
+                        }
+                        if ($request->filled('id_kecamatan')) {
+                            $query->where('id_kecamatan', $request->id_kecamatan);
+                        }
+                        if ($request->filled('id_kelurahan')) {
+                            $query->where('id_kelurahan', $request->id_kelurahan);
+                        }
+                    }, true)
+                    ->addIndexColumn()
+                    ->addColumn('action_button', function ($row) {
+                        return '<div class="btn-group center">
                         <a class="btn btn-sm btn-warning" id="btnAnggota" href="' . route('kelompok_anggota', $row->id) . '"><i class="fa fa-users"></i></a>
                         <div class="btn btn-sm btn-success" id="btnEdit" onclick="editData(' . $row->id . ')"><i class="fa fa-edit"></i></div>
                         <div class="btn btn-sm btn-danger" id="btnDelete" onclick="deleteData(' . $row->id . ')"><i class="fa fa-times-circle"></i></div>
                     </div>';
-                })
-                ->rawColumns(['action_button'])
-                ->make(true);
+                    })
+                    ->rawColumns(['action_button'])
+                    ->make(true);
+            }
         }
 
         return view('kelompoks.index');

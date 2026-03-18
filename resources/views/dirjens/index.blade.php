@@ -26,7 +26,7 @@
                             </select>
                         </div>
                     </div>
-                    <table class="table table-bordered nowrap" id="tableUserLevel">
+                    <table class="table table-bordered nowrap" id="tableUserLevel" style="width: 100%;">
                         <thead>
                             <tr class="bg-primary">
                                 <th scope="col">No</th>
@@ -210,6 +210,9 @@
         table = $('#tableUserLevel').DataTable({
             processing: true,
             serverSide: true,
+            scrollX: true,
+            scrollY: '400px',
+            scrollCollapse: true,
             ajax: {
                 url: "{{ url('dirjen') }}",
                 data: function(d) {

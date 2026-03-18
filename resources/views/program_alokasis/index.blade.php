@@ -138,7 +138,7 @@
                         <div class="col-lg-6 form-group">
                             <label>Contact Person PIC</label>
                             <input autocomplete="off" class="form-control" id="contact_person" name="contact_person"
-                                placeholder="Contact Person" required type="text">
+                                placeholder="Contact Person" type="text">
                         </div>
                     </div>
                     <div class="row">
@@ -153,6 +153,7 @@
                                 <option value="pkt">pkt</option>
                                 <option value="ha">ha</option>
                                 <option value="unit">unit</option>
+                                <option value="klp">klp</option>
                             </select>
                         </div>
                     </div>

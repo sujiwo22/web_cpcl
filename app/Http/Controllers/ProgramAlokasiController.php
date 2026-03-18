@@ -11,34 +11,60 @@ use Yajra\DataTables\Facades\DataTables;
 
 class ProgramAlokasiController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $query = DB::table(ProgramAlokasi::$view)->select('*');
-            return DataTables::of($query)
-                ->filter(function ($query) use ($request) {
-                    if ($request->filled('tahun')) {
-                        $query->where('tahun', $request->tahun);
-                    }
-                    if ($request->filled('program_kementrian')) {
-                        $query->where('program_kementrian', $request->program_kementrian);
-                    }
-                    if ($request->filled('id_kementrian')) {
-                        $query->where('id_kementrian', $request->id_kementrian);
-                    }
-                }, true)
-                ->addIndexColumn()
-                ->addColumn('action_button', function ($row) {
-                    return '<div class="btn-group">
+            $action = $request->action;
+            $query = DB::table(ProgramAlokasi::$view)->select('*')->orderBy('id','desc');
+            if ($action == 'search') {
+                return DataTables::of($query)
+                    ->filter(function ($query) use ($request) {
+                        if ($request->filled('tahun')) {
+                            $query->where('tahun', $request->tahun);
+                        }
+                        if ($request->filled('program_kementrian')) {
+                            $query->where('program_kementrian', $request->program_kementrian);
+                        }
+                        if ($request->filled('id_kementrian')) {
+                            $query->where('id_kementrian', $request->id_kementrian);
+                        }
+                    }, true)
+                    ->addIndexColumn()
+                    ->addColumn('action_button', function ($row) {
+                        return '<div class="btn-group">
+                        <div class="btn btn-sm btn-success" id="btnSelect" onclick="selectDataProgram(' . $row->id . ',`'.$row->nama_program.'`)"><i class="fa fa-check-circle"></i></div>
+                    </div>';
+                    })
+                    ->rawColumns(['action_button'])
+                    ->make(true);
+            } else {
+                return DataTables::of($query)
+                    ->filter(function ($query) use ($request) {
+                        if ($request->filled('tahun')) {
+                            $query->where('tahun', $request->tahun);
+                        }
+                        if ($request->filled('program_kementrian')) {
+                            $query->where('program_kementrian', $request->program_kementrian);
+                        }
+                        if ($request->filled('id_kementrian')) {
+                            $query->where('id_kementrian', $request->id_kementrian);
+                        }
+                    }, true)
+                    ->addIndexColumn()
+                    ->addColumn('action_button', function ($row) {
+                        return '<div class="btn-group">
                         <div class="btn btn-sm btn-success" id="btnEdit" onclick="editData(' . $row->id . ')"><i class="fa fa-edit"></i></div>
                         <div class="btn btn-sm btn-danger" id="btnDelete" onclick="deleteData(' . $row->id . ')"><i class="fa fa-times-circle"></i></div>
                     </div>';
-                })
-                ->rawColumns(['action_button'])
-                ->make(true);
+                    })
+                    ->rawColumns(['action_button'])
+                    ->make(true);
+            }
         }
         $data['tahun_mulai'] = date('Y') - 2;
         $data['tahun_selesai'] = date('Y') + 5;

@@ -20,25 +20,32 @@
                 <div class="card-body">
                     <div class="alert alert-success d-none" id="success-alert"></div>
                     <div class="row mb-2">
-                        <div class="col-lg-3">
+                        <div class="col-lg-2">
                             <label>Provinsi</label>
-                            <select name="id_provinsi_filter" id="id_provinsi_filter" class="form-control" placeholder="Provinsi">
+                            <select name="id_provinsi_filter" id="id_provinsi_filter" class="form-control"
+                                placeholder="Provinsi">
                             </select>
                         </div>
-                        <div class="col-lg-3">
+                        <div class="col-lg-2">
                             <label>Kota</label>
                             <select name="id_kota_filter" id="id_kota_filter" class="form-control" placeholder="Kota">
                             </select>
                         </div>
-                        <div class="col-lg-3">
+                        <div class="col-lg-2">
                             <label>Kecamatan</label>
-                            <select name="id_kecamatan_filter" id="id_kecamatan_filter" class="form-control" placeholder="Kecamatan">
+                            <select name="id_kecamatan_filter" id="id_kecamatan_filter" class="form-control"
+                                placeholder="Kecamatan">
                             </select>
                         </div>
-                        <div class="col-lg-3">
+                        <div class="col-lg-2">
                             <label>Kelurahan</label>
-                            <select name="id_kelurahan_filter" id="id_kelurahan_filter" class="form-control" placeholder="Kelurahan">
+                            <select name="id_kelurahan_filter" id="id_kelurahan_filter" class="form-control"
+                                placeholder="Kelurahan">
                             </select>
+                        </div>
+                        <div class="col-lg-1">
+                            <div class="btn btn-app bg-warning mt-2" id="btnSearch"><i class="fa fa-search"></i>Cari
+                            </div>
                         </div>
                     </div>
                     <table class="table table-bordered nowrap" id="tableUserLevel">
@@ -86,14 +93,16 @@
                         <div class="col-lg-6">
                             <div class="form-group">
                                 <label>Provinsi *)</label>
-                                <select name="id_provinsi" id="id_provinsi" class="form-control" aria-placeholder="Provinsi" required>
+                                <select name="id_provinsi" id="id_provinsi" class="form-control"
+                                    aria-placeholder="Provinsi" required>
                                 </select>
                             </div>
                         </div>
                         <div class="col-lg-6">
                             <div class="form-group">
                                 <label>Kota *)</label>
-                                <select name="id_kota" id="id_kota" class="form-control" aria-placeholder="Kota" required>
+                                <select name="id_kota" id="id_kota" class="form-control" aria-placeholder="Kota"
+                                    required>
                                 </select>
                             </div>
                         </div>
@@ -103,14 +112,16 @@
                         <div class="col-lg-6">
                             <div class="form-group">
                                 <label>Kecamatan *)</label>
-                                <select name="id_kecamatan" id="id_kecamatan" class="form-control" aria-placeholder="Kecamatan" required>
+                                <select name="id_kecamatan" id="id_kecamatan" class="form-control"
+                                    aria-placeholder="Kecamatan" required>
                                 </select>
                             </div>
                         </div>
                         <div class="col-lg-6">
                             <div class="form-group">
                                 <label>Kelurahan *)</label>
-                                <select name="id_kelurahan" id="id_kelurahan" class="form-control" aria-placeholder="Kelurahan" required>
+                                <select name="id_kelurahan" id="id_kelurahan" class="form-control"
+                                    aria-placeholder="Kelurahan" required>
                                 </select>
                             </div>
                         </div>
@@ -122,8 +133,8 @@
                     </div>
                     <div class="form-group">
                         <label>Alamat *)</label>
-                        <input autocomplete="off" class="form-control" id="alamat" name="alamat"
-                            placeholder="Alamat" required type="text">
+                        <input autocomplete="off" class="form-control" id="alamat" name="alamat" placeholder="Alamat"
+                            required type="text">
                     </div>
                     <div class="form-group">
                         <label>Penanggung Jawab *)</label>
@@ -189,7 +200,7 @@
         $('#id_provinsi_filter').on('change', function() {
             id_provinsi = $('#id_provinsi_filter').val();
             list_kota('id_kota_filter', id_provinsi);
-            ajaxList(id_provinsi);
+            // ajaxList(id_provinsi);
         });
         $('#id_provinsi').on('change', function() {
             var id_provinsi = $('#id_provinsi').val();
@@ -198,7 +209,7 @@
         $('#id_kota_filter').on('change', function() {
             id_kota = $('#id_kota_filter').val();
             list_kecamatan('id_kecamatan_filter', id_kota);
-            ajaxList(id_provinsi, id_kota);
+            // ajaxList(id_provinsi, id_kota);
         });
         $('#id_kota').on('change', function() {
             var id_kota = $('#id_kota').val();
@@ -207,13 +218,24 @@
         $('#id_kecamatan_filter').on('change', function() {
             id_kecamatan = $('#id_kecamatan_filter').val();
             list_kelurahan('id_kelurahan_filter', id_kecamatan);
-            ajaxList(id_provinsi, id_kota, id_kecamatan);
+            // ajaxList(id_provinsi, id_kota, id_kecamatan);
         });
         $('#id_kecamatan').on('change', function() {
             var id_kecamatan = $('#id_kecamatan').val();
             list_kelurahan('id_kelurahan', id_kecamatan);
         });
         $('#id_kelurahan_filter').on('change', function() {
+            id_kelurahan = $('#id_kelurahan_filter').val();
+            // ajaxList(id_provinsi, id_kota, id_kecamatan, id_kelurahan);
+        });
+
+        $('#btnSearch').on('click', function() {
+            // var tahun = $('#tahun_filter').val();
+            // var program_kementrian = $('#program_kementrian_filter').val();
+            // var id_kementrian = $('#id_kementrian_filter').val();
+            id_provinsi = $('#id_provinsi_filter').val();
+            id_kota = $('#id_kota_filter').val();
+            id_kecamatan = $('#id_kecamatan_filter').val();
             id_kelurahan = $('#id_kelurahan_filter').val();
             ajaxList(id_provinsi, id_kota, id_kecamatan, id_kelurahan);
         });

@@ -14,7 +14,7 @@
                         </div>
                     @endif
 
-                    {{ __('You are logged in!') }}
+                    {{ $_SERVER['REQUEST_URI']; }}
                 </div>
             </div>
         </div>

@@ -198,12 +198,6 @@ class UserController extends Controller
         } else {
             $response = ['status' => true];
         }
-
-        // $response = [
-        //         'status' => false,
-        //         'message' => $data,
-        //     ];
-
         return $response;
     }
 
