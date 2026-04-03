@@ -62,6 +62,8 @@
                                 <th scope="col">Nama Lengkap</th>
                                 <th scope="col">Jabatan</th>
                                 <th scope="col">No. HP</th>
+                                <th scope="col">TPS</th>
+                                <th scope="col">Tingkat Dukungan</th>
                                 <th scope="col">Alamat</th>
                                 <th scope="col">Created by</th>
                                 <th scope="col">Created at</th>
@@ -159,6 +161,29 @@
                             </div>
                         </div>
                     </div>
+                    
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label>TPS *)</label>
+                                <select name="id_tps" id="id_tps" class="form-control" aria-placeholder="TPS" required>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label>Tingkat Dukungan *)</label>
+                                <select name="tingkat_dukungan" id="tingkat_dukungan" class="form-control" aria-placeholder="Tingkat Dukungan" required>
+                                    <option value="">[Please Select]</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                            </select>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-default pull-left" data-dismiss="modal" type="button"><i
@@ -185,6 +210,8 @@
                 <input id="act" name="act" type="hidden">
                 <input id="id_kelompok" name="id_kelompok" type="hidden">
                 <div class="modal-body">
+                    <div class="alert alert-warning d-none" id="failed-alert-upload"></div>
+                    <div class="alert alert-success d-none" id="success-alert-upload"></div>
                     <div class="form-group">
                         <label>Upload Excel</label>
                         <div class="custom-file">
@@ -246,6 +273,7 @@
     let id_provinsi, id_kota, id_kecamatan, id_kelurahan, id_kelompok;
     $(function() {
         list_provinsi('id_provinsi_filter');
+        ajaxList();
         $('#id_provinsi_filter').on('change', function() {
             id_provinsi = $('#id_provinsi_filter').val();
             list_kota('id_kota_filter', id_provinsi);
@@ -277,6 +305,11 @@
             id_kelurahan = $('#id_kelurahan_filter').val();
             list_kelompok('id_kelompok_filter', id_kelurahan);
         });
+        
+        $('#id_kelurahan').on('change', function() {
+            id_kelurahan = $('#id_kelurahan').val();
+            list_tps('id_tps', id_kelurahan);
+        });
 
         $('#btnSearch').on('click', function() {
             id_provinsi = $('#id_provinsi_filter').val();
@@ -284,11 +317,11 @@
             id_kecamatan = $('#id_kecamatan_filter').val();
             id_kelurahan = $('#id_kelurahan_filter').val();
             id_kelompok = $('#id_kelompok_filter').val();
-            if (id_provinsi == '' || id_kota == '' || id_kecamatan == '' || id_kelurahan == '' || id_kelompok == '') {
-                alert('Silahkan pilih kelompok masyarakat terlebih dahulu. Terima Kasih...');
-            } else {
+            // if (id_provinsi == '' || id_kota == '' || id_kecamatan == '' || id_kelurahan == '' || id_kelompok == '') {
+            //     alert('Silahkan pilih kelompok masyarakat terlebih dahulu. Terima Kasih...');
+            // } else {
                 ajaxList(id_provinsi, id_kota, id_kecamatan, id_kelurahan, id_kelompok);
-            }
+            // }
         });
     });
 
@@ -345,8 +378,8 @@
         var url;
         url = "/upload_data_anggota";
         $(this).find('.error-text').text('');
-        $('#success-alert').addClass('d-none').text('');
-        $('#failed-alert').addClass('d-none').text('');
+        $('#success-alert-upload').addClass('d-none').text('');
+        $('#failed-alert-upload').addClass('d-none').text('');
 
 
         $.ajax({
@@ -367,7 +400,7 @@
                     $('#previewSec').html(data.html['original']);
                     $('#uploadBtn').attr('disabled', false);
                 } else {
-                    $('#failed-alert').removeClass('d-none').text(data['message']);
+                    $('#failed-alert-upload').removeClass('d-none').text(data['message']);
                     $('#uploadBtn').attr('disabled', true);
                 }
             },
@@ -394,8 +427,8 @@
         var url;
         url = "/upload_data_anggota_process";
         $(this).find('.error-text').text('');
-        $('#success-alert').addClass('d-none').text('');
-        $('#failed-alert').addClass('d-none').text('');
+        $('#success-alert-upload').addClass('d-none').text('');
+        $('#failed-alert-upload').addClass('d-none').text('');
 
 
         $.ajax({
@@ -414,12 +447,12 @@
                 if (data['status']) {
                     console.log(data);
                     $('#modalFormUpload').modal('hide');
-                    $('#success-alert').removeClass('d-none').text("Data telah berhasil diupload.");
+                    $('#success-alert-upload').removeClass('d-none').text("Data telah berhasil diupload.");
                     table.ajax.reload(null, false);
                     // $('#previewSec').html(data.html['original']);
                     // $('#uploadBtn').attr('disabled', false);
                 } else {
-                    $('#failed-alert').removeClass('d-none').text(data['message']);
+                    $('#failed-alert-upload').removeClass('d-none').text(data['message']);
                     // $('#uploadBtn').attr('disabled', true);
                 }
             },
@@ -520,6 +553,7 @@
                 list_kota('id_kota', data.id_provinsi, data.id_kota);
                 list_kecamatan('id_kecamatan', data.id_kota, data.id_kecamatan);
                 list_kelurahan('id_kelurahan', data.id_kecamatan, data.id_kelurahan);
+                list_tps('id_tps',data.id_kelurahan,data.id_tps);
                 list_jabatan('id_jabatan', data.id_jabatan);
                 $('#nama_lengkap').val(data.nama_anggota);
                 $('#alamat').val(data.alamat);
@@ -558,7 +592,7 @@
         }
     };
 
-    function ajaxList(id_provinsi, id_kota, id_kecamatan, id_kelurahan, id_kelompok) {
+    function ajaxList(id_provinsi=null, id_kota=null, id_kecamatan=null, id_kelurahan=null, id_kelompok=null) {
         table.destroy();
         table = $('#tableUserLevel').DataTable({
             processing: true,
@@ -597,6 +631,12 @@
                 },
                 {
                     data: 'no_hp'
+                },
+                {
+                    data: 'nama_tps'
+                },
+                {
+                    data: 'tingkat_dukungan'
                 },
                 {
                     data: 'alamat_lengkap_anggota'

@@ -13,6 +13,10 @@
                                 <a class="nav-link active" href="#" onclick="addForm()"><i
                                         class="fa fa-plus-circle"></i> Add Data</a>
                             </li>
+                            <li class="nav-item ml-2">
+                                <a class="nav-link bg-success" href="#" onclick="uploadForm()"><i
+                                        class="fa fa-upload"></i> Upload Data</a>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -134,6 +138,44 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="modalFormUpload">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h4 class="modal-title"></h4>
+                <button aria-label="Close" class="close" data-dismiss="modal" type="button">
+                    <span aria-hidden="true">&times;</span></button>
+            </div>
+            <form data-toggle="validator" id="formUpload" enctype="multipart/form-data">
+                @csrf
+                <input id="id" name="id" type="hidden">
+                <input id="act" name="act" type="hidden">
+                <input id="id_kelompok" name="id_kelompok" type="hidden">
+                <div class="modal-body">
+                    <div class="alert alert-warning d-none" id="failed-alert-upload"></div>
+                    <div class="alert alert-success d-none" id="success-alert-upload"></div>
+                    <div class="form-group">
+                        <label>Upload Excel</label>
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" id="file" name="file">
+                            <label class="custom-file-label" for="file">Choose file</label>
+                        </div>
+                    </div>
+                    <button class="btn btn-block btn-success mb-2" type="submit" id="btnPreview"><i class="fa fa-eye"></i> Preview Data</button>
+                    <div id="previewSec"></div>
+                </div>
+            </form>
+            <div class="modal-footer">
+                <button class="btn btn-default pull-left" data-dismiss="modal" type="button"><i
+                        class="fa fa-times-circle"></i> Close</button>
+                <button class="btn btn-primary" id="uploadBtn" type="button" onclick="processUpload()" disabled><i class="fa fa-upload"></i>
+                    Upload</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
 @endsection
 
 @section('javascript')
@@ -219,6 +261,114 @@
             }
         });
     });
+
+    $('#formUpload').submit(function(e) {
+        e.preventDefault();
+
+        let formData = new FormData(this);
+        var act = $('#act').val();
+        var url;
+        url = "/upload_data_tps";
+        $(this).find('.error-text').text('');
+        $('#success-alert-upload').addClass('d-none').text('');
+        $('#failed-alert-upload').addClass('d-none').text('');
+
+
+        $.ajax({
+            method: 'POST',
+            url: url,
+            data: formData,
+            contentType: false,
+            processData: false,
+            enctype: "multipart/form-data",
+            beforeSend: function() {
+                $('#btnPreview').html('<i class="fa fa-spinner fa-spin"></i> Processing...');
+                $('#uploadBtn').attr('disabled', true);
+            },
+            success: function(data) {
+                $('#btnPreview').html('<i class="fa fa-eye"></i> Preview Data');
+                if (data['status']) {
+                    console.log(data);
+                    $('#previewSec').html(data.html['original']);
+                    $('#uploadBtn').attr('disabled', false);
+                } else {
+                    $('#failed-alert-upload').removeClass('d-none').text(data['message']);
+                    $('#uploadBtn').attr('disabled', true);
+                }
+            },
+            error: function(response) {
+                $('#uploadBtn').attr('disabled', true);
+                $('#btnPreview').html('<i class="fa fa-eye"></i> Preview Data');
+                if (response.status === 422) {
+                    let errors = response.responseJSON.errors;
+                    $.each(errors, function(key, value) {
+                        $('.' + key + '_error').text(value[0]);
+                    });
+                } else {
+                    alert('Something went wrong. Please try again.');
+                }
+            },
+        });
+    });
+
+    function processUpload() {
+        const form = document.querySelector('#formUpload');
+        let formData = new FormData(form);
+        var act = $('#act').val();
+        var url;
+        url = "/upload_data_tps_process";
+        $(this).find('.error-text').text('');
+        $('#success-alert-upload').addClass('d-none').text('');
+        $('#failed-alert-upload').addClass('d-none').text('');
+
+
+        $.ajax({
+            method: 'POST',
+            url: url,
+            data: formData,
+            contentType: false,
+            processData: false,
+            enctype: "multipart/form-data",
+            beforeSend: function() {
+                $('#uploadBtn').html('<i class="fa fa-spinner fa-spin"></i> Processing...');
+                // $('#uploadBtn').attr('disabled', true);
+            },
+            success: function(data) {
+                $('#uploadBtn').html('<i class="fa fa-uload"></i> Upload');
+                if (data['status']) {
+                    console.log(data);
+                    $('#modalFormUpload').modal('hide');
+                    $('#success-alert-upload').removeClass('d-none').text("Data telah berhasil diupload.");
+                    table.ajax.reload(null, false);
+                    // $('#previewSec').html(data.html['original']);
+                    // $('#uploadBtn').attr('disabled', false);
+                } else {
+                    $('#failed-alert-upload').removeClass('d-none').text(data['message']);
+                    // $('#uploadBtn').attr('disabled', true);
+                }
+            },
+            error: function(response) {
+                // $('#uploadBtn').attr('disabled', true);
+                $('#uploadBtn').html('<i class="fa fa-uload"></i> Upload');
+                if (response.status === 422) {
+                    let errors = response.responseJSON.errors;
+                    $.each(errors, function(key, value) {
+                        $('.' + key + '_error').text(value[0]);
+                    });
+                } else {
+                    alert('Something went wrong. Please try again.');
+                }
+            },
+        });
+    }
+
+    function uploadForm() {
+        $('#modalFormUpload').modal('show');
+        $('#modalFormUpload .modal-title').html('<i class="fa fa-plus-circle"></i> Upload Data');
+        $('#modalFormUpload form')[0].reset();
+        $('#modalFormUpload #id').val('');
+        $('#modalFormUpload #act').val('save');
+    };
 
     function addForm() {
         $('#modalForm').modal('show');

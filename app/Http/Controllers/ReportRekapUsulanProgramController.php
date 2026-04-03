@@ -7,6 +7,7 @@ use App\Models\Kelompok;
 use App\Models\Kota;
 use App\Http\Controllers\FileController;
 use App\Models\Anggota;
+use App\Models\Kementrian;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -110,9 +111,11 @@ class ReportRekapUsulanProgramController extends Controller
         $data['tahun_now'] = date('Y');
         return view('report_rekap_usulan_program.index', $data);
     }
+    
     function viewReport(Request $request)
     {
         $list_kota = Kota::where('id_provinsi', $request->id_provinsi)->orderBy('nama_kota', 'asc')->get();
+        $list_kementrian = Kementrian::withoutTrashed()->orderBy('urutan', 'asc')->get();
         $sql_add_1 = '';
         $sql_add_2 = '';
         foreach ($list_kota as $lk) {
@@ -122,7 +125,7 @@ class ReportRekapUsulanProgramController extends Controller
             $sql_add_2 .= ",b2.$namaKab";
         }
         $sql_query = "SELECT b.* $sql_add_2 FROM (
-                SELECT a.tahun,a.id_kementrian, a.nama_kementrian,a.nama_dirjen,case when a.program_kementrian='N' then 1000 ELSE a.urutan END urutan, 
+                SELECT a.id,a.tahun,a.id_kementrian, a.nama_kementrian,a.nama_dirjen,case when a.program_kementrian='N' then 1000 ELSE a.urutan END urutan, 
                 a.id_program, a.nama_program,a.pic,a.contact_person,a.kuota,a.satuan,a.cpcl_status,a.verifikasi_status,a.kontrak_status,a.pengiriman_status,a.distribusi_status
                 FROM program_alokasi_view a
                 WHERE tahun=$request->tahun) b
@@ -141,10 +144,40 @@ class ReportRekapUsulanProgramController extends Controller
                 ORDER BY b.urutan,b.nama_dirjen asc";
         // return $sql_query;
         $query = DB::select($sql_query);
+        $result = [];
+        foreach ($query as $qr) {
+            $row = [];
+            $row['id'] = $qr->id;
+            $row['tahun'] = $qr->tahun;
+            $row['id_program'] = $qr->id_program;
+            $row['nama_dirjen'] = $qr->nama_dirjen;
+            $row['nama_program'] = $qr->nama_program;
+            $row['pic'] = $qr->pic;
+            $row['contact_person'] = $qr->contact_person;
+            $row['kuota'] = $qr->kuota;
+            foreach ($list_kota as $lkt) {
+                $kota = str_replace(' ', '_', str_replace('KABUPATEN ', '', $lkt->nama_kota));
+                $row[$kota] = $qr->$kota;
+            }
+            $row['cpcl_status'] = $qr->cpcl_status;
+            $row['verifikasi_status'] = $qr->verifikasi_status;
+            $row['kontrak_status'] = $qr->kontrak_status;
+            $row['pengiriman_status'] = $qr->pengiriman_status;
+            $row['distribusi_status'] = $qr->distribusi_status;
+            $result[$qr->id_kementrian][] = $row;
+        }
+        // $result_row = collect($result[3])->countBy('nama_dirjen');
+        $result_row = [];
+        foreach ($list_kementrian as $lkMen) {
+            $result_row[$lkMen->id] = collect($result[$lkMen->id])->countBy('nama_dirjen');
+        }
+        // return $result_row;
         ob_start();
         $data['list_kota'] = $list_kota;
+        $data['list_kementrian'] = $list_kementrian;
         $data['jml_col'] = $list_kota->count();
-        $data['result'] = $query;
+        $data['result'] = $result;
+        $data['result_row'] = $result_row;
         echo view('report_rekap_usulan_program.report', $data);
         $content = ob_get_clean();
         return ['html' => response($content)];

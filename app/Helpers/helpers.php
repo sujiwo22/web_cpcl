@@ -363,3 +363,97 @@ function getStyleFontTitleLeft()
     ];
     return $style_col;
 }
+
+function tl_status($status)
+{
+    if (substr($status, 0, 5) == 'BELUM') {
+        return 'text-red';
+    } elseif ($status == 'LENGKAP' || substr($status, 0, 5) == 'SUDAH') {
+        return 'text-green';
+    } else {
+        return 'text-yellow';
+    }
+}
+
+function nama_bulan($var)
+{
+    $bulan_arr = [
+        'Januari',
+        'Februari',
+        'Maret',
+        'April',
+        'Mei',
+        'Juni',
+        'Juli',
+        'Agustus',
+        'September',
+        'Oktober',
+        'November',
+        'Desember'
+    ];
+    return $bulan_arr[$var - 1];
+}
+
+
+function printMsgTime($time)
+{
+    $waktuAwal = new DateTime($time);
+    $waktuAkhir = new DateTime(now());
+
+    $selisih = $waktuAwal->diff($waktuAkhir);
+
+    // Konversi ke total menit: (jam * 60) + menit
+    $totalMenit = ($selisih->days * 24 * 60) + ($selisih->h * 60) + $selisih->i;
+    $totalMenit = ($selisih->days * 24 * 60) + ($selisih->h * 60) + $selisih->i;
+    $totalJam = ($selisih->days * 24) + $selisih->h;
+    $hasil = '';
+    if ($totalMenit <= 5) {
+        $hasil = 'Baru Saja';
+    } elseif ($totalMenit <= 50) {
+        $hasil = $totalMenit . ' menit yang lalu';
+    } else {
+        if ($totalJam < 24) {
+            $hasil = $totalJam . ' jam yang lalu';
+        } elseif ($totalJam <= 48) {
+            $hasil = 'Kemarin';
+        } else {
+            if ($selisih->days <= 7) {
+                $hasil = $selisih->days . ' hari yang lalu';
+            } else {
+                $hasil = format_date($time);
+            }
+        }
+    }
+
+    return $hasil;
+}
+
+function formatIndoPhone($value)
+{
+    $value_1 = str_replace([' ', '-'], '', $value);
+    $value_2 = preg_replace('/[^0-9]/', '', $value_1);
+
+    if (str_starts_with($value_2, '+628')) {
+        return '08' . substr($value_2, 4);
+    }
+
+    if (str_starts_with($value_2, '628')) {
+        return '08' . substr($value_2, 3);
+    }
+
+    if (str_starts_with($value_2, '62')) {
+        return '0' . substr($value_2, 2);
+    }
+
+    return $value_2;
+}
+
+function validasiKabKota($kota)
+{
+    $value_1 = str_replace(['KABUPATEN ', 'KAB. ', 'Kabupaten ', 'Kab. '], '', $kota);
+    if (substr($value_1, 0, 4) == 'KOTA') {
+        return $value_1;
+    } else {
+        return 'KABUPATEN ' . $value_1;
+    }
+}

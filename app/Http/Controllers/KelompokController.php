@@ -190,10 +190,10 @@ class KelompokController extends Controller
 
     public function list(string $id_kelurahan)
     {
-        if ($id_kelurahan != null) {
-            $result = Kelompok::where(['id_kelurahan' => $id_kelurahan])->get();
+        if ($id_kelurahan == null || $id_kelurahan == 'null') {
+            $result = Kelompok::all();
         } else {
-            $result = Kelompok::withoutTrashed()->get();
+            $result = Kelompok::where(['id_kelurahan' => $id_kelurahan])->get();
         }
         return $result;
     }

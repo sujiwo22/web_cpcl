@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Kelompok;
 use App\Models\Anggota;
 use App\Models\Jabatan;
+use App\Rules\IndonesianPhoneNumber;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -103,48 +104,69 @@ class AnggotaController extends Controller
         $idUser = Auth::id();
         $id = $request->id;
         $act = $request->act;
-        if ($act == 'edit') {
-            $data = Anggota::find($id);
-            $save = $data->update([
-                'id_kelompok' => $request->id_kelompok,
-                'nik' => $request->nik,
-                'nama_anggota' => $request->nama_lengkap,
-                'id_jabatan' => $request->id_jabatan,
-                'no_hp' => $request->no_hp,
-                'alamat' => $request->alamat,
-                'id_kelurahan' => $request->id_kelurahan,
-                'upd_id_user' => (int) $idUser,
-            ]);
-            if ($save) {
-                $response = [
-                    'status' => true,
-                ];
-            } else {
-                $response = [
-                    'status' => false,
-                    'message' => 'Terjadi kesalahan saat menyimpan data. Silahkan anda coba kembali.',
-                ];
-            }
+        $no_hp = formatIndoPhone($request->no_hp);
+        $request->merge([
+            'no_hp' => $no_hp
+        ]);
+        $validator = Validator::make($request->all(), [
+            'no_hp' => ['required', new IndonesianPhoneNumber]
+        ]);
+        // $request->validate([
+        //     'no_hp' => ['required', new IndonesianPhoneNumber]
+        // ]);
+        if ($validator->fails()) {
+            $response = [
+                'status' => false,
+                'message' => $validator->errors()->first('no_hp'),
+            ];
         } else {
-            $save = Anggota::create([
-                'id_kelompok' => $request->id_kelompok,
-                'nik' => $request->nik,
-                'nama_anggota' => $request->nama_lengkap,
-                'id_jabatan' => $request->id_jabatan,
-                'no_hp' => $request->no_hp,
-                'alamat' => $request->alamat,
-                'id_kelurahan' => $request->id_kelurahan,
-                'crt_id_user' => (int) $idUser,
-            ]);
-            if ($save) {
-                $response = [
-                    'status' => true,
-                ];
+            if ($act == 'edit') {
+                $data = Anggota::find($id);
+                $save = $data->update([
+                    'id_kelompok' => $request->id_kelompok,
+                    'nik' => $request->nik,
+                    'nama_anggota' => $request->nama_lengkap,
+                    'id_jabatan' => $request->id_jabatan,
+                    'no_hp' => $no_hp,
+                    'id_tps' => $request->id_tps,
+                    'tingkat_dukungan' => $request->tingkat_dukungan,
+                    'alamat' => $request->alamat,
+                    'id_kelurahan' => $request->id_kelurahan,
+                    'upd_id_user' => (int) $idUser,
+                ]);
+                if ($save) {
+                    $response = [
+                        'status' => true,
+                    ];
+                } else {
+                    $response = [
+                        'status' => false,
+                        'message' => 'Terjadi kesalahan saat menyimpan data. Silahkan anda coba kembali.',
+                    ];
+                }
             } else {
-                $response = [
-                    'status' => false,
-                    'message' => 'Terjadi kesalahan saat menyimpan data. Silahkan anda coba kembali.',
-                ];
+                $save = Anggota::create([
+                    'id_kelompok' => $request->id_kelompok,
+                    'nik' => $request->nik,
+                    'nama_anggota' => $request->nama_lengkap,
+                    'id_jabatan' => $request->id_jabatan,
+                    'no_hp' => $no_hp,
+                    'id_tps' => $request->id_tps,
+                    'tingkat_dukungan' => $request->tingkat_dukungan,
+                    'alamat' => $request->alamat,
+                    'id_kelurahan' => $request->id_kelurahan,
+                    'crt_id_user' => (int) $idUser,
+                ]);
+                if ($save) {
+                    $response = [
+                        'status' => true,
+                    ];
+                } else {
+                    $response = [
+                        'status' => false,
+                        'message' => 'Terjadi kesalahan saat menyimpan data. Silahkan anda coba kembali.',
+                    ];
+                }
             }
         }
         return $response;
@@ -213,18 +235,25 @@ class AnggotaController extends Controller
         $validator = Validator::make($request->all(), [
             'file' => 'required|mimes:xlsx,xls,csv',
         ]);
-        $filePath = $file->getPathname();
-        try {
-            $spreadsheet = IOFactory::load($filePath);
-            $worksheet = $spreadsheet->getActiveSheet();
-            $sheetData = $worksheet->toArray(null, true, true, true);
-            ob_start();
-            $data['sheetData'] = $sheetData;
-            echo view('anggotas.preview', $data);
-            $content = ob_get_clean();
-            return ['status' => true, 'html' => response($content)];
-        } catch (\PhpOffice\PhpSpreadsheet\Reader\Exception $e) {
-            return ['status' => false, 'message' => 'Error reading spreadsheet file' . $e->getMessage()];
+        if ($validator->fails()) {
+            return [
+                'status' => false,
+                'message' => $validator->errors()->first('file'),
+            ];
+        } else {
+            $filePath = $file->getPathname();
+            try {
+                $spreadsheet = IOFactory::load($filePath);
+                $worksheet = $spreadsheet->getActiveSheet();
+                $sheetData = $worksheet->toArray(null, true, true, true);
+                ob_start();
+                $data['sheetData'] = $sheetData;
+                echo view('anggotas.preview', $data);
+                $content = ob_get_clean();
+                return ['status' => true, 'html' => response($content)];
+            } catch (\PhpOffice\PhpSpreadsheet\Reader\Exception $e) {
+                return ['status' => false, 'message' => 'Error reading spreadsheet file' . $e->getMessage()];
+            }
         }
     }
 
@@ -236,48 +265,66 @@ class AnggotaController extends Controller
         $validator = Validator::make($request->all(), [
             'file' => 'required|mimes:xlsx,xls,csv',
         ]);
-        $filePath = $file->getPathname();
-        try {
-            $spreadsheet = IOFactory::load($filePath);
-            $worksheet = $spreadsheet->getActiveSheet();
-            $sheetData = $worksheet->toArray(null, true, true, true);
-            $kelompok = DB::table(Kelompok::$view)->where('id', $id_kelompok)->first();
-            $data_save = [];
-            foreach (array_slice($sheetData, 1) as $sd) {
-                $row_data = [];
-                $jabatan = $sd['D'] == '' ? 'Anggota' : $sd['D'];
-                $cekJab = Jabatan::where('nama_jabatan', $jabatan)->first();
-                if ($cekJab->count() == 0) {
-                    $saveJabatan = Jabatan::create([
-                        'nama_jabatan' => $jabatan,
+        if ($validator->fails()) {
+            return [
+                'status' => false,
+                'message' => $validator->errors()->first('file'),
+            ];
+        } else {
+            $filePath = $file->getPathname();
+            try {
+                $spreadsheet = IOFactory::load($filePath);
+                $worksheet = $spreadsheet->getActiveSheet();
+                $sheetData = $worksheet->toArray(null, true, true, true);
+                $kelompok = DB::table(Kelompok::$view)->where('id', $id_kelompok)->first();
+                $data_save = [];
+                $error_phone = false;
+                foreach (array_slice($sheetData, 1) as $sd) {
+                    if (!preg_match('/^(\+62|62|0)8[1-9][0-9]{7,10}$/', $sd['E'])) {
+                        $error_phone = true;
+                    }
+                    $row_data = [];
+                    $jabatan = $sd['D'] == '' ? 'Anggota' : $sd['D'];
+                    $cekJab = Jabatan::where('nama_jabatan', $jabatan)->first();
+                    if ($cekJab->count() == 0) {
+                        $saveJabatan = Jabatan::create([
+                            'nama_jabatan' => $jabatan,
+                            'crt_id_user' => $idUser,
+                        ]);
+                        $id_jabatan = $saveJabatan->id;
+                    } else {
+                        $id_jabatan = $cekJab->id;
+                    }
+                    $row_data = [
+                        'nik' => $sd['C'],
+                        'nama_anggota' => $sd['B'],
+                        'id_jabatan' => $id_jabatan,
+                        'no_hp' => $sd['E'],
+                        'alamat' => $sd['F'],
+                        'id_kelompok' => $id_kelompok,
+                        'id_kelurahan' => $kelompok->id_kelurahan,
                         'crt_id_user' => $idUser,
-                    ]);
-                    $id_jabatan = $saveJabatan->id;
-                } else {
-                    $id_jabatan = $cekJab->id;
+                        'created_at' => Carbon::now()
+                    ];
+                    $data_save[] = $row_data;
                 }
-                $row_data = [
-                    'nik' => $sd['C'],
-                    'nama_anggota' => $sd['B'],
-                    'id_jabatan' => $id_jabatan,
-                    'no_hp' => $sd['E'],
-                    'alamat' => $sd['F'],
-                    'id_kelompok' => $id_kelompok,
-                    'id_kelurahan' => $kelompok->id_kelurahan,
-                    'crt_id_user' => $idUser,
-                    'created_at' => Carbon::now()
-                ];
-                $data_save[] = $row_data;
+                if ($error_phone) {
+                    return [
+                        'status' => false,
+                        'message' => 'Beberapa nomor handphone tidak sesuai format. Format No HP diawali dengan: +628,628 atau 08. Silahkan cek kembali data anda. Terima Kasih...'
+                    ];
+                } else {
+                    $saveAll = Anggota::insert($data_save);
+                    if ($saveAll) {
+                        return ['status' => true];
+                    } else {
+                        return ['status' => false];
+                    }
+                }
+                // return ['status' => true, 'html' => response($content)];
+            } catch (\PhpOffice\PhpSpreadsheet\Reader\Exception $e) {
+                return ['status' => false, 'message' => 'Error reading spreadsheet file' . $e->getMessage()];
             }
-            $saveAll = Anggota::insert($data_save);
-            if ($saveAll) {
-                return ['status' => true];
-            } else {
-                return ['status' => false];
-            }
-            // return ['status' => true, 'html' => response($content)];
-        } catch (\PhpOffice\PhpSpreadsheet\Reader\Exception $e) {
-            return ['status' => false, 'message' => 'Error reading spreadsheet file' . $e->getMessage()];
         }
     }
 }

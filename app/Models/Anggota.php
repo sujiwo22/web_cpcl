@@ -17,6 +17,8 @@ class Anggota extends Model
         'nama_anggota',
         'id_jabatan',
         'no_hp',
+        'id_tps',
+        'tingkat_dukungan',
         'alamat',
         'id_kelurahan',
         'crt_id_user',

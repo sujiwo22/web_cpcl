@@ -20,7 +20,7 @@
                     @php($url = url($menuItem->url))
                 @endif
                 <a class="nav-link @if ($isActive) active @endif" href="{{ $url }}">
-                    <i class="nav-icon fas fa-tachometer-alt"></i>
+                    <i class="nav-icon fas fa-{{ $menuItem->icon }}"></i>
                     <p>{{ $menuItem->name }}
                         @if (count($menuItem->children))
                             <i class="right fas fa-angle-left"></i>
@@ -30,7 +30,7 @@
 
                 <!-- {{-- Check for children (sub-menus) and include a sub-menu partial if needed --}} -->
                 @if (count($menuItem->children))
-                    @include('menu.submenu', ['menus' => $menuItem->children])
+                    @include('menu.submenu', ['menus' => $menuItem->children,'level'=>1])
                 @endif
             </li>
         @endforeach

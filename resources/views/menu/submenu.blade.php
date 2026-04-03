@@ -9,6 +9,9 @@
                     return request()->is($child->url) || request()->is($child->url . '/*');
                 });
             }
+            $icon_show = $menu->icon==null?'circle':$menu->icon;
+            $level_now=$level+1;
+            $mg_cls=$level*2;
         @endphp
 
         <li class="nav-item @if($isActive) menu-open @endif">
@@ -17,16 +20,16 @@
             @else
                 @php($url = url($menu->url))
             @endif
-            <a class="nav-link @if($isActive) active @endif" href="{{ $url }}">
-                <i class="far fa-circle nav-icon"></i>
-                <p>{{ $menu->name }}
+            <a class="ml-{{ $mg_cls }} nav-link @if($isActive) active @endif" href="{{ $url }}">
+                <i class="fas fa-{{ $icon_show }} nav-icon"></i>
+                <p style="margin-left: 3px;">{{ $menu->name }}
                     @if (count($menu->children))
                         <i class="right fas fa-angle-left"></i>
                     @endif
                 </p>
             </a>
             @if (count($menu->children))
-                @include('menu.submenu', ['menus' => $menu->children])
+                @include('menu.submenu', ['menus' => $menu->children,'level'=>$level_now])
             @endif
         </li>
     @endforeach

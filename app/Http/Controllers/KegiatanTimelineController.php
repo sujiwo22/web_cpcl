@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\UserLevel;
+use App\Models\KegiatanTimeline;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
 
-class UserLevelController extends Controller
+class KegiatanTimelineController extends Controller
 {
     public function __construct()
     {
@@ -18,40 +18,20 @@ class UserLevelController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {            
-            $query = DB::table('user_level_views')->select('id','level_name','crt_user_name','created_at');
+            $query = KegiatanTimeline::select('*');
             return DataTables::of($query)
-                ->filter(function ($query) use ($request) {
-
-                    // Filter Nama
-                    if ($request->filled('level_name')) {
-                        $query->where('level_name', 'like', "%{$request->name}%");
-                    }
-
-                    // Filter Status
-                    if ($request->filled('status')) {
-                        $query->where('status', $request->status);
-                    }
-
-                    // Filter Date Range
-                    if ($request->filled('start_date') && $request->filled('end_date')) {
-                        $query->whereBetween('created_at', [
-                            $request->start_date,
-                            $request->end_date,
-                        ]);
-                    }
-                }, true)
                 ->addIndexColumn()
-                ->addColumn('status_label', function ($row) {
+                ->addColumn('action_button', function ($row) {
                     return '<div class="btn-group">
                         <div class="btn btn-sm btn-success" id="btnEdit" onclick="editData('.$row->id.')"><i class="fa fa-edit"></i></div>
                         <div class="btn btn-sm btn-danger" id="btnDelete" onclick="deleteData('.$row->id.')"><i class="fa fa-times-circle"></i></div>
                     </div>';
                 })
-                ->rawColumns(['status_label'])
+                ->rawColumns(['action_button'])
                 ->make(true);
         }
 
-        return view('user_levels.index');
+        return view('kegiatan_timelines.index');
     }
 
     /**
@@ -71,14 +51,14 @@ class UserLevelController extends Controller
         $id = $request->id;
         $act = $request->act;
         if ($act == 'edit') {
-            $userlevels = UserLevel::findOrFail($id);
-            $save = $userlevels->update([
-                'level_name' => $request->level_name,
+            $data = KegiatanTimeline::findOrFail($id);
+            $save = $data->update([
+                'nama_kegiatan' => $request->nama_kegiatan,
                 'upd_id_user' => (int) $idUser,
             ]);
         } else {
-            $save = UserLevel::create([
-                'level_name' => $request->level_name,
+            $save = KegiatanTimeline::create([
+                'nama_kegiatan' => $request->nama_kegiatan,
                 'crt_id_user' => (int) $idUser,
             ]);
         }
@@ -102,9 +82,8 @@ class UserLevelController extends Controller
      */
     public function show(string $id)
     {
-        $userlevels = UserLevel::findOrFail($id);
-
-        return $userlevels;
+        $result = KegiatanTimeline::findOrFail($id);
+        return $result;
     }
 
     /**
@@ -120,29 +99,7 @@ class UserLevelController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        // $idUser = Auth::id();
-        // $userlevels = UserLevel::findOrFail($id);
-        // $save = $userlevels->update([
-        //     'level_name' => $request->level_name,
-        //     'upd_id_user' => (int) $idUser,
-        //     // 'updated_at' => date('Y-m-d H:i:s'),
-        // ]);
-        // // echo $save;
-
-        // if ($save) {
-        //     // return response()->json(['success' => 'User Level created successfully.']);
-        //     $response = [
-        //         'status' => true,
-        //     ];
-        // } else {
-        //     // return response()->json(['success' => 'Something when error. Please try again.']);
-        //     $response = [
-        //         'status' => false,
-        //         'message' => 'Terjadi kesalahan saat update data. Silahkan anda coba kembali.',
-        //     ];
-        // }
-
-        // return $response;
+        //
     }
 
     /**
@@ -150,11 +107,11 @@ class UserLevelController extends Controller
      */
     public function destroy(string $id)
     {
-        $user_level = UserLevel::find($id);
-        $save = $user_level->delete();
+        $data = KegiatanTimeline::find($id);
+        $save = $data->delete();
         if ($save) {
             $idUser = Auth::id();
-            $user_level->update([
+            $data->update([
                 'del_id_user' => (int) $idUser,
             ]);
             $response = [
@@ -171,7 +128,7 @@ class UserLevelController extends Controller
     }
 
     public function list() {
-        $user_level = UserLevel::withoutTrashed()->get();
-        return $user_level;
+        $data = KegiatanTimeline::withoutTrashed()->get();
+        return $data;
     }
 }

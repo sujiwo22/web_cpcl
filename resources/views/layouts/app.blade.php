@@ -29,6 +29,9 @@
     <!-- Scripts -->
     <!-- @vite(['resources/sass/app.scss', 'resources/js/app.js']) -->
     <script src="https://cdn.jsdelivr.net"></script>
+
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
 </head>
 
 <body class="hold-transition sidebar-mini">
@@ -240,6 +243,7 @@
 <script src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 <!-- AdminLTE -->
 <script src="{{ asset('vendor/adminlte/dist/js/adminlte.min.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
     function list_provinsi(object, hasil = null) {
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
@@ -447,7 +451,7 @@
 
     function list_kelompok(object, id_kelurahan = null, hasil = null) {
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-         var url = "{{ route('kelompok_daftar.list',':id') }}";
+        var url = "{{ route('kelompok_daftar.list',':id') }}";
         url = url.replace(':id', id_kelurahan);
         $.ajax({
             method: 'GET',
@@ -528,7 +532,7 @@
             }
         });
     };
-    
+
     function list_program(object, hasil = null) {
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
         var url = "{{ route('program.list') }}";
@@ -569,7 +573,7 @@
         });
     };
 
-    function list_dirjen (object, id_kementrian, hasil = null) {
+    function list_dirjen(object, id_kementrian, hasil = null) {
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
         var url = "{{ route('dirjen.list',':id') }}";
         url = url.replace(':id', id_kementrian);
@@ -643,6 +647,162 @@
                             '</option>');
                     }
                 });
+            },
+            error: function(response) {
+                $('#' + object).empty();
+            }
+        });
+    };
+
+    function list_kegiatan(object, hasil = null) {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        var url = "{{ route('kegiatan_timeline.list') }}";
+        $.ajax({
+            method: 'GET',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken
+            },
+            url: url,
+            before: function() {
+                $('#' + object).empty();
+                $('#' + object).append('<option value="">Wait...</option>')
+            },
+            success: function(data) {
+                $('#' + object).empty();
+                $('#' + object).append('<option value="">[Please Select]</option>')
+                $.each(data, function(key, value) {
+                    if (hasil != null) {
+                        if (hasil == value.id) {
+                            $('#' + object).append('<option value="' + value.id + '" selected>' +
+                                value.nama_kegiatan +
+                                '</option>');
+                        } else {
+                            $('#' + object).append('<option value="' + value.id + '">' + value
+                                .nama_kegiatan +
+                                '</option>');
+                        }
+                    } else {
+                        $('#' + object).append('<option value="' + value.id + '">' + value
+                            .nama_kegiatan +
+                            '</option>');
+                    }
+                });
+            },
+            error: function(response) {
+                $('#' + object).empty();
+            }
+        });
+    };
+
+    function list_tps(object, id_kelurahan = null, hasil = null) {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        var url = "{{ route('tps.list',':id') }}";
+        url = url.replace(':id', id_kelurahan);
+        $.ajax({
+            method: 'GET',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken
+            },
+            url: url,
+            before: function() {
+                $('#' + object).empty();
+                $('#' + object).append('<option value="">Wait...</option>')
+            },
+            success: function(data) {
+                $('#' + object).empty();
+                $('#' + object).append('<option value="">[Please Select]</option>')
+                $.each(data, function(key, value) {
+                    if (hasil != null) {
+                        if (hasil == value.id) {
+                            $('#' + object).append('<option value="' + value.id + '" selected>' +
+                                value.nama_tps +
+                                '</option>');
+                        } else {
+                            $('#' + object).append('<option value="' + value.id + '">' + value
+                                .nama_tps +
+                                '</option>');
+                        }
+                    } else {
+                        $('#' + object).append('<option value="' + value.id + '">' + value
+                            .nama_tps +
+                            '</option>');
+                    }
+                });
+            },
+            error: function(response) {
+                $('#' + object).empty();
+            }
+        });
+    };
+
+    function list_tps(object, id_kelurahan = null, hasil = null) {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        var url = "{{ route('tps.list',':id') }}";
+        url = url.replace(':id', id_kelurahan);
+        $.ajax({
+            method: 'GET',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken
+            },
+            url: url,
+            before: function() {
+                $('#' + object).empty();
+                $('#' + object).append('<option value="">Wait...</option>')
+            },
+            success: function(data) {
+                $('#' + object).empty();
+                $('#' + object).append('<option value="">[Please Select]</option>')
+                $.each(data, function(key, value) {
+                    if (hasil != null) {
+                        if (hasil == value.id) {
+                            $('#' + object).append('<option value="' + value.id + '" selected>' +
+                                value.nama_tps +
+                                '</option>');
+                        } else {
+                            $('#' + object).append('<option value="' + value.id + '">' + value
+                                .nama_tps +
+                                '</option>');
+                        }
+                    } else {
+                        $('#' + object).append('<option value="' + value.id + '">' + value
+                            .nama_tps +
+                            '</option>');
+                    }
+                });
+            },
+            error: function(response) {
+                $('#' + object).empty();
+            }
+        });
+    };
+
+    function list_kontak_for_wa(object, id_kelompok, append = true, hasil = null) {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        var url = "{{ route('kelompok_anggota.list',':id') }}";
+        url = url.replace(':id', id_kelompok);
+        $.ajax({
+            method: 'GET',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken
+            },
+            url: url,
+            before: function() {
+                if (!append) {
+                    $('#' + object).empty();
+                    $('#' + object).append('<option value="">Wait...</option>')
+                }
+            },
+            success: function(data) {
+                if (!append) {
+                    $('#' + object).empty();
+                }
+                $.each(data, function(key, value) {
+                    $('#' + object).append('<option value="' + value.no_hp + '">' + value
+                        .nama_anggota +
+                        '</option>');
+                });
+                $("#" + object + " > option").prop("selected", "selected");
+                $("#" + object).trigger("change");
             },
             error: function(response) {
                 $('#' + object).empty();

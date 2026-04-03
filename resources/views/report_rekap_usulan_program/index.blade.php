@@ -44,10 +44,38 @@
                         </div>
                     </div>
                     <div id="showData"></div>
-
-
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modalFormUpdate">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h4 class="modal-title"></h4>
+                <button aria-label="Close" class="close" data-dismiss="modal" type="button">
+                    <span aria-hidden="true">&times;</span></button>
+            </div>
+            <form data-toggle="validator" id="formCRUD">
+                @csrf
+                <input id="code" name="code" type="hidden">
+                <input id="id" name="id" type="hidden">
+                <div class="modal-body">
+                    <div class="alert alert-warning d-none" id="failed-alert"></div>
+                    <div class="form-group">
+                        <label>Status *)</label>
+                        <select class="form-control" id="status" name="status"
+                            placeholder="Status" required></select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-default pull-left" data-dismiss="modal" type="button"><i
+                            class="fa fa-times-circle"></i> Close</button>
+                    <button class="btn btn-primary" id="saveBtn" type="submit"><i class="fa fa-save"></i>
+                        Save</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -69,6 +97,55 @@
             var id_provinsi = $('#id_provinsi_filter').val();
             var tahun = $('#tahun_filter').val();
             showReport(id_provinsi, tahun);
+        });
+
+        $('#formCRUD').submit(function(e) {
+            e.preventDefault();
+
+            let formData = new FormData(this);
+            var act = $('#act').val();
+            var url;
+            url = "/update_status_alokasi_program";
+            $(this).find('.error-text').text('');
+            $('#success-alert').addClass('d-none').text('');
+            $('#failed-alert').addClass('d-none').text('');
+
+            $.ajax({
+                method: 'POST',
+                url: url,
+                data: formData,
+                contentType: false,
+                processData: false,
+                beforeSend: function() {
+                    $('#saveBtn').attr('disabled', true);
+                },
+                success: function(data) {
+                    $('#saveBtn').attr('disabled', false);
+                    if (data['status']) {
+                        $('#modalFormUpdate').modal('hide');
+                        $('#success-alert').removeClass('d-none').text("Data telah berhasil disimpan.");
+                        $('#' + data['code'] + data['id']).text(data['status_data']);
+                        $('#' + data['code'] + data['id']).removeClass('text-green');
+                        $('#' + data['code'] + data['id']).removeClass('text-red');
+                        $('#' + data['code'] + data['id']).removeClass('text-yellow');
+                        $('#' + data['code'] + data['id']).addClass(data['new_tl']);
+                        // table.ajax.reload(null, false);
+                    } else {
+                        $('#failed-alert').removeClass('d-none').text(data['message']);
+                    }
+                },
+                error: function(response) {
+                    $('#saveBtn').attr('disabled', false);
+                    if (response.status === 422) {
+                        let errors = response.responseJSON.errors;
+                        $.each(errors, function(key, value) {
+                            $('.' + key + '_error').text(value[0]);
+                        });
+                    } else {
+                        alert('Something went wrong. Please try again.');
+                    }
+                },
+            });
         });
     });
 
@@ -118,71 +195,22 @@
         });
     }
 
-    function ajaxList(id_provinsi, tahun) {
-        table.destroy();
-        table = $('#tableUserLevel').DataTable({
-            processing: true,
-            serverSide: true,
-            scrollX: true,
-            scrollY: '400px',
-            scrollCollapse: true,
-            ajax: {
-                url: "{{ url('report_rekap_usulan_program') }}",
-                data: function(d) {
-                    d.id_provinsi = id_provinsi;
-                    d.tahun = tahun;
-                }
-            },
-            columns: [{
-                    data: 'DT_RowIndex',
-                    orderable: false,
-                    searchable: false
-                },
-                {
-                    data: 'action_button',
-                    orderable: false,
-                    searchable: false
-                },
-                {
-                    data: 'nama_dirjen'
-                },
-                {
-                    data: 'nama_program'
-                },
-                {
-                    data: 'pic'
-                },
-                {
-                    data: 'contact_person'
-                },
-                {
-                    data: 'kuota'
-                },
-                <?php
-                foreach ($list_kota as $lk) {
-                    $namaKabTemp = str_replace('KABUPATEN ', '', $lk->nama_kota);
-                    $namaKab = str_replace(' ', '_', $namaKabTemp);
-                ?> {
-                        data: '<?= $namaKab ?>'
-                    },
-                <?php } ?> {
-                    data: 'cpcl_status'
-                },
-                {
-                    data: 'verifikasi_status'
-                },
-                {
-                    data: 'kontrak_status'
-                },
-                {
-                    data: 'pengiriman_status'
-                },
-                {
-                    data: 'distribusi_status'
-                },
-
-            ]
-        });
+    function updateStatus(code, id, status = null) {
+        $('#modalFormUpdate').modal('show');
+        $('#modalFormUpdate .modal-title').html('<i class="fa fa-plus-circle"></i> Update Status');
+        $('#modalFormUpdate form')[0].reset();
+        $('#modalFormUpdate #code').val(code);
+        $('#modalFormUpdate #id').val(id);
+        $('#status').empty();
+        if (code == 'cpcl') {
+            $('#status').append('<option value="BELUM LENGKAP">BELUM LENGKAP</option>');
+            $('#status').append('<option value="SUDAH LENGKAP">SUDAH LENGKAP</option>');
+        } else {
+            $('#status').append('<option value="BELUM">BELUM</option>');
+            $('#status').append('<option value="ON PROCESS">ON PROCESS</option>');
+            $('#status').append('<option value="SUDAH">SUDAH</option>');
+        }
+        $('#status').val(status).change();
     }
 </script>
 @endsection
