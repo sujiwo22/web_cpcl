@@ -19,6 +19,10 @@ use App\Http\Controllers\ProgramAlokasiController;
 use App\Http\Controllers\PicController;
 use App\Http\Controllers\ProposalController;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\KegiatanTimelineController;
+use App\Http\Controllers\KegiatanTimelineProcessController;
+use App\Http\Controllers\PesanWAController;
+use App\Http\Controllers\PesanWaPengirimController;
 use App\Http\Controllers\ReportRekapUsulanProgramController;
 use App\Mail\SendEmail;
 use App\Models\Anggota;
@@ -36,7 +40,14 @@ Route::get('/', function () {
 
 Auth::routes();
 Route::middleware('auth')->group(function () {
+    // Dashboard
     Route::get('/home', [HomeController::class, 'index'])->name('home');
+    Route::get('/total_cpcl', [HomeController::class, 'totalCPCL'])->name('total_cpcl');
+    Route::get('/total_tps', [HomeController::class, 'totalTPS'])->name('total_tps');
+    Route::get('/total_proposal/{id}', [HomeController::class, 'totalProposal'])->name('total_proposal');
+    Route::get('/data_proposal', [HomeController::class, 'dataProposal'])->name('data_proposal');
+    Route::get('/data_proposal_per_kementrian', [HomeController::class, 'dataKementrian'])->name('data_proposal_per_kementrian');
+    Route::get('/data_proposal_per_kota', [HomeController::class, 'dataProposalKabKota'])->name('data_proposal_per_kota');
 
     // User Level
     Route::get('/user_level', [UserLevelController::class, 'index'])->name('user_level');
@@ -86,8 +97,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/tps', [TpsController::class, 'store'])->name('tps.store');
     Route::get('/tps/{id}', [TpsController::class, 'show'])->name('tps.show');
     Route::delete('/tps/{id}', [TpsController::class, 'destroy'])->name('tps.destroy');
-    Route::post('/list_tps', [TpsController::class, 'list'])->name('tps.list');
-
+    Route::get('/list_tps/{id}', [TpsController::class, 'list'])->name('tps.list');
+    Route::post('/upload_data_tps', [TpsController::class, 'previewDataExcel'])->name('tps.upload_data');
+    Route::post('/upload_data_tps_process', [TpsController::class, 'uploadDataExcel'])->name('tps.upload_data_process');
+    
     // Kementrian
     Route::get('/kementrian', [KementrianController::class, 'index'])->name('kementrian');
     Route::post('/kementrian', [KementrianController::class, 'store'])->name('kementrian.store');
@@ -122,7 +135,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/kelompok_anggota', [AnggotaController::class, 'store'])->name('kelompok_anggota.store');
     Route::get('/kelompok_anggota_show/{id}', [AnggotaController::class, 'show'])->name('kelompok_anggota.show');
     Route::delete('/kelompok_anggota/{id}', [AnggotaController::class, 'destroy'])->name('kelompok_anggota.destroy');
-    Route::get('/list_kelompok_anggota', [AnggotaController::class, 'list'])->name('kelompok_anggota.list');
+    Route::get('/list_kelompok_anggota/{id}', [AnggotaController::class, 'list'])->name('kelompok_anggota.list');
     Route::post('/upload_data_anggota', [AnggotaController::class, 'previewDataExcel'])->name('kelompok_anggota.upload_data');
     Route::post('/upload_data_anggota_process', [AnggotaController::class, 'uploadDataExcel'])->name('kelompok_anggota.upload_data_process');
 
@@ -139,6 +152,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/alokasi_program/{id}', [ProgramAlokasiController::class, 'show'])->name('alokasi_program.show');
     Route::delete('/alokasi_program/{id}', [ProgramAlokasiController::class, 'destroy'])->name('alokasi_program.destroy');
     Route::get('/list_alokasi_program', [ProgramAlokasiController::class, 'list'])->name('alokasi_program.list');
+    Route::post('/update_status_alokasi_program', [ProgramAlokasiController::class, 'updateStatus'])->name('update_status_alokasi_program.store');
 
     // PIC
     Route::get('/pic', [PicController::class, 'index'])->name('pic');
@@ -156,13 +170,59 @@ Route::middleware('auth')->group(function () {
     Route::get('/proposal_generate_excel/{id}', [ProposalController::class, 'downloadExcel'])->name('proposal.download_excel');
 
 
+    // Kegiatan Timeline
+    Route::get('/kegiatan_timeline', [KegiatanTimelineController::class, 'index'])->name('kegiatan_timeline');
+    Route::post('/kegiatan_timeline', [KegiatanTimelineController::class, 'store'])->name('kegiatan_timeline.store');
+    Route::get('/kegiatan_timeline/{id}', [KegiatanTimelineController::class, 'show'])->name('kegiatan_timeline.show');
+    Route::delete('/kegiatan_timeline/{id}', [KegiatanTimelineController::class, 'destroy'])->name('kegiatan_timeline.destroy');
+    Route::get('/list_kegiatan_timeline', [KegiatanTimelineController::class, 'list'])->name('kegiatan_timeline.list');
+
+    // Kegiatan Timeline Process
+    Route::get('/kegiatan_timeline_process', [KegiatanTimelineProcessController::class, 'index'])->name('kegiatan_timeline_process');
+    Route::post('/kegiatan_timeline_process', [KegiatanTimelineProcessController::class, 'store'])->name('kegiatan_timeline_process.store');
+    Route::get('/kegiatan_timeline_process/{id}', [KegiatanTimelineProcessController::class, 'show'])->name('kegiatan_timeline_process.show');
+    Route::delete('/kegiatan_timeline_process/{id}', [KegiatanTimelineProcessController::class, 'destroy'])->name('kegiatan_timeline_process.destroy');
+    Route::get('/list_kegiatan_timeline_process', [KegiatanTimelineProcessController::class, 'list'])->name('kegiatan_timeline_process.list');
+    Route::post('/kegiatan_timeline_process_view', [KegiatanTimelineProcessController::class, 'viewData'])->name('kegiatan_timeline_process_view');
+    Route::put('/kegiatan_timeline_process/{id}', [KegiatanTimelineProcessController::class, 'update'])->name('kegiatan_timeline_process.update');
+    Route::put('/kegiatan_timeline_process_urutan/{id}', [KegiatanTimelineProcessController::class, 'update_urutan'])->name('kegiatan_timeline_process.update_urutan');
+
+
     Route::get('/view-file/{filename}', [FileController::class, 'viewFile'])->name('view.file');
     Route::get('/download-file/{filename}', [FileController::class, 'downloadFile'])->name('download.file');
 
     // Report Rekap Usulan Program
     Route::get('/report_rekap_usulan_program', [ReportRekapUsulanProgramController::class, 'index'])->name('report_rekap_usulan_program');
     Route::post('/report_rekap_usulan_program_view', [ReportRekapUsulanProgramController::class, 'viewReport'])->name('report_rekap_usulan_program_view');
+
+    // WA Setting Pengirim
+    Route::get('/pesan_wa_setting', [PesanWaPengirimController::class, 'index'])->name('pesan_wa_setting');
+    Route::post('/pesan_wa_setting', [PesanWaPengirimController::class, 'store'])->name('pesan_wa_setting.store');
+    Route::get('/pesan_wa_setting/{id}', [PesanWaPengirimController::class, 'show'])->name('pesan_wa_setting.show');
+    Route::delete('/pesan_wa_setting/{id}', [PesanWaPengirimController::class, 'destroy'])->name('pesan_wa_setting.destroy');
+    Route::get('/list_pesan_wa_setting', [PesanWaPengirimController::class, 'list'])->name('pesan_wa_setting.list');
+
+    // WA Message
+    Route::get('/pesan_wa', [PesanWAController::class, 'index'])->name('pesan_wa');
+    Route::get('/pesan_wa_create', [PesanWAController::class, 'create'])->name('pesan_wa_create');
+    Route::get('/pesan_wa_terkirim', [PesanWAController::class, 'terkirim'])->name('pesan_wa_terkirim');
+    Route::get('/pesan_wa_draft', [PesanWAController::class, 'draft'])->name('pesan_wa_draft');
+    Route::get('/pesan_wa_dihapus', [PesanWAController::class, 'dihapus'])->name('pesan_wa_dihapus');
+    Route::get('/pesan_wa_baca/{id}', [PesanWAController::class, 'baca'])->name('pesan_wa_baca');
+    Route::post('/pesan_wa_send', [PesanWAController::class, 'store'])->name('pesan_wa_send.store');
+
+
+    Route::post('/pesan_wa', [PesanWAController::class, 'store'])->name('pesan_wa.store');
+    Route::get('/pesan_wa/{id}', [PesanWAController::class, 'show'])->name('pesan_wa.show');
+    Route::delete('/pesan_wa/{id}', [PesanWAController::class, 'destroy'])->name('pesan_wa.destroy');
+    Route::get('/list_pesan_wa', [PesanWAController::class, 'list'])->name('pesan_wa.list');
+
+
+
+    Route::get('/kirim_wa', [PesanWAController::class, 'kirimWA'])->name('kirim_wa');
 });
+// WA Masuk
+Route::post('/webhook/whatsapp', [PesanWAController::class, 'receiveWA']);
 
 Route::get('/send-email', function () {
     $data = [
