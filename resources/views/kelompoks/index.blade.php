@@ -13,6 +13,10 @@
                                 <a class="nav-link active" href="#" onclick="addForm()"><i
                                         class="fa fa-plus-circle"></i> Add Data</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link bg-success ml-2" href="#" onclick="uploadForm()"><i
+                                        class="fa fa-upload"></i> Upload Data</a>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -20,6 +24,12 @@
                 <div class="card-body">
                     <div class="alert alert-success d-none" id="success-alert"></div>
                     <div class="row mb-2">
+                        <div class="col-lg-2">
+                            <label>Kementrian</label>
+                            <select name="id_kementrian_filter" id="id_kementrian_filter" class="form-control"
+                                placeholder="Kementrian">
+                            </select>
+                        </div>
                         <div class="col-lg-2">
                             <label>Provinsi</label>
                             <select name="id_provinsi_filter" id="id_provinsi_filter" class="form-control"
@@ -53,6 +63,7 @@
                             <tr class="bg-primary">
                                 <th scope="col">No</th>
                                 <th scope="col" style="width: 20%">Actions</th>
+                                <th scope="col">Kementrian</th>
                                 <th scope="col">Nama Kelompok</th>
                                 <th scope="col">Alamat</th>
                                 <th scope="col">Penanggung Jawab</th>
@@ -89,6 +100,11 @@
                 <input id="act" name="act" type="hidden">
                 <div class="modal-body">
                     <div class="alert alert-warning d-none" id="failed-alert"></div>
+                    <div class="form-group">
+                        <label>Kementrian</label>
+                        <select name="id_kementrian" id="id_kementrian" class="form-control" aria-placeholder="Kementrian" required>
+                        </select>
+                    </div>
                     <div class="row">
                         <div class="col-lg-6">
                             <div class="form-group">
@@ -158,7 +174,45 @@
     </div>
 </div>
 
-<!-- <div class="modal fade" id="modalForm">
+<div class="modal fade" id="modalFormUpload">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h4 class="modal-title"></h4>
+                <button aria-label="Close" class="close" data-dismiss="modal" type="button">
+                    <span aria-hidden="true">&times;</span></button>
+            </div>
+            <form data-toggle="validator" id="formUpload" enctype="multipart/form-data">
+                @csrf
+                <input id="id" name="id" type="hidden">
+                <input id="act" name="act" type="hidden">
+                <input id="id_kelompok" name="id_kelompok" type="hidden">
+                <div class="modal-body">
+                    <div class="alert alert-warning d-none" id="failed-alert-upload"></div>
+                    <div class="alert alert-success d-none" id="success-alert-upload"></div>
+                    <div class="form-group">
+                        <label>Upload Excel</label>
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" id="file" name="file">
+                            <label class="custom-file-label" for="file">Choose file</label>
+                        </div>
+                    </div>
+                    <button class="btn btn-block btn-success mb-2" type="submit" id="btnPreview"><i class="fa fa-eye"></i> Preview Data</button>
+                    <div id="previewSec"></div>
+                </div>
+            </form>
+            <div class="modal-footer">
+                <button class="btn btn-default pull-left" data-dismiss="modal" type="button"><i
+                        class="fa fa-times-circle"></i> Close</button>
+                <button class="btn btn-primary" id="uploadBtn" type="button" onclick="processUpload()" disabled><i class="fa fa-upload"></i>
+                    Upload</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalFormAnggota">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header bg-primary">
@@ -167,8 +221,7 @@
                     <span aria-hidden="true">&times;</span></button>
             </div>
             <div class="modal-body">
-                <div class="btn btn-success" onclick="tambahAnggota()"
-                <table class="table table-bordered table-sm" id="tableAnggota">
+                <table class="table table-bordered table-sm nowrap" id="tableAnggota">
                     <thead>
                         <tr class="bg-primary">
                             <th>No</th>
@@ -176,6 +229,8 @@
                             <th>Nama Lengkap</th>
                             <th>Jabatan</th>
                             <th>No. HP</th>
+                            <th>TPS</th>
+                            <th>Tingkat Dukungan</th>
                             <th>Alamat</th>
                             <th>Created by</th>
                             <th>Created at</th>
@@ -188,19 +243,20 @@
             </div>
         </div>
     </div>
-</div> -->
+</div>
 @endsection
 
 @section('javascript')
 <script type="text/javascript">
     var table = $('#tableUserLevel').DataTable();
-    let id_provinsi, id_kota, id_kecamatan;
+    var tableAnggota = $('#tableAnggota').DataTable();
+    let id_kementrian, id_provinsi, id_kota, id_kecamatan;
     $(function() {
+        list_kementrian('id_kementrian_filter');
         list_provinsi('id_provinsi_filter');
         $('#id_provinsi_filter').on('change', function() {
             id_provinsi = $('#id_provinsi_filter').val();
             list_kota('id_kota_filter', id_provinsi);
-            // ajaxList(id_provinsi);
         });
         $('#id_provinsi').on('change', function() {
             var id_provinsi = $('#id_provinsi').val();
@@ -209,7 +265,6 @@
         $('#id_kota_filter').on('change', function() {
             id_kota = $('#id_kota_filter').val();
             list_kecamatan('id_kecamatan_filter', id_kota);
-            // ajaxList(id_provinsi, id_kota);
         });
         $('#id_kota').on('change', function() {
             var id_kota = $('#id_kota').val();
@@ -218,7 +273,6 @@
         $('#id_kecamatan_filter').on('change', function() {
             id_kecamatan = $('#id_kecamatan_filter').val();
             list_kelurahan('id_kelurahan_filter', id_kecamatan);
-            // ajaxList(id_provinsi, id_kota, id_kecamatan);
         });
         $('#id_kecamatan').on('change', function() {
             var id_kecamatan = $('#id_kecamatan').val();
@@ -226,18 +280,18 @@
         });
         $('#id_kelurahan_filter').on('change', function() {
             id_kelurahan = $('#id_kelurahan_filter').val();
-            // ajaxList(id_provinsi, id_kota, id_kecamatan, id_kelurahan);
         });
 
         $('#btnSearch').on('click', function() {
             // var tahun = $('#tahun_filter').val();
             // var program_kementrian = $('#program_kementrian_filter').val();
             // var id_kementrian = $('#id_kementrian_filter').val();
+            id_kementrian = $('#id_kementrian_filter').val();
             id_provinsi = $('#id_provinsi_filter').val();
             id_kota = $('#id_kota_filter').val();
             id_kecamatan = $('#id_kecamatan_filter').val();
             id_kelurahan = $('#id_kelurahan_filter').val();
-            ajaxList(id_provinsi, id_kota, id_kecamatan, id_kelurahan);
+            ajaxList(id_provinsi, id_kementrian, id_kota, id_kecamatan, id_kelurahan);
         });
     });
 
@@ -286,17 +340,119 @@
         });
     });
 
+    $('#formUpload').submit(function(e) {
+        e.preventDefault();
+
+        let formData = new FormData(this);
+        var act = $('#act').val();
+        var url;
+        url = "/upload_data_kelompok";
+        $(this).find('.error-text').text('');
+        $('#success-alert-upload').addClass('d-none').text('');
+        $('#failed-alert-upload').addClass('d-none').text('');
+
+
+        $.ajax({
+            method: 'POST',
+            url: url,
+            data: formData,
+            contentType: false,
+            processData: false,
+            enctype: "multipart/form-data",
+            beforeSend: function() {
+                $('#btnPreview').html('<i class="fa fa-spinner fa-spin"></i> Processing...');
+                $('#uploadBtn').attr('disabled', true);
+            },
+            success: function(data) {
+                $('#btnPreview').html('<i class="fa fa-eye"></i> Preview Data');
+                if (data['status']) {
+                    console.log(data);
+                    $('#previewSec').html(data.html['original']);
+                    $('#uploadBtn').attr('disabled', false);
+                } else {
+                    $('#failed-alert-upload').removeClass('d-none').text(data['message']);
+                    $('#uploadBtn').attr('disabled', true);
+                }
+            },
+            error: function(response) {
+                $('#uploadBtn').attr('disabled', true);
+                $('#btnPreview').html('<i class="fa fa-eye"></i> Preview Data');
+                if (response.status === 422) {
+                    let errors = response.responseJSON.errors;
+                    $.each(errors, function(key, value) {
+                        $('.' + key + '_error').text(value[0]);
+                    });
+                } else {
+                    alert('Something went wrong. Please try again.');
+                }
+            },
+        });
+    });
+
+    function processUpload() {
+        const form = document.querySelector('#formUpload');
+        let formData = new FormData(form);
+        var act = $('#act').val();
+        var url;
+        url = "/upload_data_kelompok_process";
+        $(this).find('.error-text').text('');
+        $('#success-alert-upload').addClass('d-none').text('');
+        $('#failed-alert-upload').addClass('d-none').text('');
+
+
+        $.ajax({
+            method: 'POST',
+            url: url,
+            data: formData,
+            contentType: false,
+            processData: false,
+            enctype: "multipart/form-data",
+            beforeSend: function() {
+                $('#uploadBtn').html('<i class="fa fa-spinner fa-spin"></i> Processing...');
+                // $('#uploadBtn').attr('disabled', true);
+            },
+            success: function(data) {
+                $('#uploadBtn').html('<i class="fa fa-uload"></i> Upload');
+                if (data['status']) {
+                    console.log(data);
+                    $('#modalFormUpload').modal('hide');
+                    $('#success-alert-upload').removeClass('d-none').text("Data telah berhasil diupload.");
+                    table.ajax.reload(null, false);
+                    // $('#previewSec').html(data.html['original']);
+                    // $('#uploadBtn').attr('disabled', false);
+                } else {
+                    $('#failed-alert-upload').removeClass('d-none').text(data['message']);
+                    // $('#uploadBtn').attr('disabled', true);
+                }
+            },
+            error: function(response) {
+                // $('#uploadBtn').attr('disabled', true);
+                $('#uploadBtn').html('<i class="fa fa-uload"></i> Upload');
+                if (response.status === 422) {
+                    let errors = response.responseJSON.errors;
+                    $.each(errors, function(key, value) {
+                        $('.' + key + '_error').text(value[0]);
+                    });
+                } else {
+                    alert('Something went wrong. Please try again.');
+                }
+            },
+        });
+    }
+
     function addForm() {
         $('#modalForm').modal('show');
         $('#modalForm .modal-title').html('<i class="fa fa-plus-circle"></i> Add Data');
         $('#modalForm form')[0].reset();
         $('#modalForm #id').val('');
         $('#modalForm #act').val('save');
+        var id_kemn = $('#id_kementrian_filter').val();
         var id_prov = $('#id_provinsi_filter').val();
         var id_kota = $('#id_kota_filter').val();
         var id_kec = $('#id_kecamatan_filter').val();
         var id_kel = $('#id_kelurahan_filter').val();
 
+        list_kementrian('id_kementrian', id_kemn != null ? id_kemn : null);
         list_provinsi('id_provinsi', id_prov != null ? id_prov : null);
         list_kota('id_kota', id_prov != null ? id_prov : null, id_kota != null ? id_kota : null);
         list_kecamatan('id_kecamatan', id_kota != null ? id_kota : null, id_kec != null ? id_kec : null);
@@ -317,6 +473,7 @@
             url: url,
             success: function(data) {
                 console.log(data);
+                list_kementrian('id_kementrian', data.id_kementrian);
                 list_provinsi('id_provinsi', data.id_provinsi);
                 list_kota('id_kota', data.id_provinsi, data.id_kota);
                 list_kecamatan('id_kecamatan', data.id_kota, data.id_kecamatan);
@@ -358,7 +515,7 @@
         }
     };
 
-    function ajaxList(id_provinsi, id_kota = null, id_kecamatan = null, id_kelurahan = null) {
+    function ajaxList(id_provinsi, id_kementrian = null, id_kota = null, id_kecamatan = null, id_kelurahan = null) {
         table.destroy();
         table = $('#tableUserLevel').DataTable({
             processing: true,
@@ -369,6 +526,7 @@
             ajax: {
                 url: "{{ url('kelompok_daftar') }}",
                 data: function(d) {
+                    d.id_kementrian = id_kementrian;
                     d.id_provinsi = id_provinsi;
                     d.id_kota = id_kota;
                     d.id_kecamatan = id_kecamatan;
@@ -384,6 +542,9 @@
                     data: 'action_button',
                     orderable: false,
                     searchable: false
+                },
+                {
+                    data: 'nama_kementrian'
                 },
                 {
                     data: 'nama_kelompok'
@@ -431,5 +592,79 @@
             table.draw();
         });
     }
+
+    function uploadForm() {
+        $('#modalFormUpload').modal('show');
+        $('#modalFormUpload .modal-title').html('<i class="fa fa-plus-circle"></i> Upload Data');
+        $('#modalFormUpload form')[0].reset();
+        $('#modalFormUpload #id').val('');
+        $('#modalFormUpload #act').val('save');
+    };
+
+    function viewAnggota(id, nama) {
+        $('#modalFormAnggota').modal('show');
+        $('#modalFormAnggota .modal-title').html('<i class="fa fa-edit"></i> List Anggota Kelompok ' + nama);
+        tableAnggota.destroy();
+        tableAnggota = $('#tableAnggota').DataTable({
+            processing: true,
+            serverSide: true,
+            scrollX: true,
+            scrollY: '400px',
+            scrollCollapse: true,
+            ajax: {
+                url: "{{ url('kelompok_anggota') }}",
+                data: function(d) {
+                    d.id_kelompok = id;
+                }
+            },
+            columns: [{
+                    data: 'DT_RowIndex',
+                    orderable: false,
+                    searchable: false
+                },
+                {
+                    data: 'nik'
+                },
+                {
+                    data: 'nama_anggota'
+                },
+                {
+                    data: 'nama_jabatan'
+                },
+                {
+                    data: 'no_hp'
+                },
+                {
+                    data: 'nama_tps'
+                },
+                {
+                    data: 'tingkat_dukungan'
+                },
+                {
+                    data: 'alamat_lengkap_anggota'
+                },
+                // {
+                // data: 'nama_kecamatan'
+                // },
+                // {
+                // data: 'nama_kota'
+                // },
+                // {
+                // data: 'nama_provinsi'
+                // },
+                {
+                    data: 'crt_user_name'
+                },
+                {
+                    data: 'created_at'
+                },
+
+            ]
+        });
+
+        $('#filter').click(function() {
+            tableAnggota.draw();
+        });
+    };
 </script>
 @endsection

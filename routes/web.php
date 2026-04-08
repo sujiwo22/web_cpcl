@@ -21,9 +21,11 @@ use App\Http\Controllers\ProposalController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\KegiatanTimelineController;
 use App\Http\Controllers\KegiatanTimelineProcessController;
+use App\Http\Controllers\MapsController;
 use App\Http\Controllers\PesanWAController;
 use App\Http\Controllers\PesanWaPengirimController;
 use App\Http\Controllers\ReportRekapUsulanProgramController;
+use App\Http\Controllers\MenuItemController;
 use App\Mail\SendEmail;
 use App\Models\Anggota;
 use App\Models\Jabatan;
@@ -64,6 +66,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/user_list/lock/{id}', [UserController::class, 'lock_account'])->name('user_list.lock');
     Route::get('/user_list/unlock/{id}', [UserController::class, 'unlock_account'])->name('user_list.unlock');
 
+    // Menu Item
+    Route::get('/menu_list', [MenuItemController::class, 'index'])->name('menu_list');
+    Route::post('/menu_list', [MenuItemController::class, 'store'])->name('menu_list.store');
+    Route::get('/menu_list/{id}', [MenuItemController::class, 'show'])->name('menu_list.show');
+    Route::delete('/menu_list/{id}', [MenuItemController::class, 'destroy'])->name('menu_list.destroy');
+    Route::get('/menu_list_item', [MenuItemController::class, 'list'])->name('menu_list.list');
+
     // Provinsi
     Route::get('/provinsi', [ProvinsiController::class, 'index'])->name('provinsi');
     Route::post('/provinsi', [ProvinsiController::class, 'store'])->name('provinsi.store');
@@ -100,7 +109,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/list_tps/{id}', [TpsController::class, 'list'])->name('tps.list');
     Route::post('/upload_data_tps', [TpsController::class, 'previewDataExcel'])->name('tps.upload_data');
     Route::post('/upload_data_tps_process', [TpsController::class, 'uploadDataExcel'])->name('tps.upload_data_process');
-    
+
     // Kementrian
     Route::get('/kementrian', [KementrianController::class, 'index'])->name('kementrian');
     Route::post('/kementrian', [KementrianController::class, 'store'])->name('kementrian.store');
@@ -128,6 +137,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/kelompok_daftar/{id}', [KelompokController::class, 'show'])->name('kelompok_daftar.show');
     Route::delete('/kelompok_daftar/{id}', [KelompokController::class, 'destroy'])->name('kelompok_daftar.destroy');
     Route::get('/list_kelompok_daftar/{id}', [KelompokController::class, 'list'])->name('kelompok_daftar.list');
+    Route::post('/upload_data_kelompok', [KelompokController::class, 'previewDataExcel'])->name('kelompok_daftar.upload_data');
+    Route::post('/upload_data_kelompok_process', [KelompokController::class, 'uploadDataExcel'])->name('kelompok_daftar.upload_data_process');
 
     // Kelompok Anggota
     Route::get('/kelompok_anggota', [AnggotaController::class, 'index'])->name('kelompok_anggota');
@@ -220,6 +231,9 @@ Route::middleware('auth')->group(function () {
 
 
     Route::get('/kirim_wa', [PesanWAController::class, 'kirimWA'])->name('kirim_wa');
+
+    // Maps
+    Route::get('/maps', [MapsController::class, 'index'])->name('maps');
 });
 // WA Masuk
 Route::post('/webhook/whatsapp', [PesanWAController::class, 'receiveWA']);
