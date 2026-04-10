@@ -112,7 +112,7 @@
                     </div>
                     <div class="row">
                         <div class="col-lg-6 form-group">
-                            <label>No. HP *)</label>
+                            <label>No. HP</label>
                             <input autocomplete="off" class="form-control" id="no_hp" name="no_hp"
                                 placeholder="No. HP (Contact Person)" type="text">
                         </div>

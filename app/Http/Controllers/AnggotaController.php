@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Kelompok;
 use App\Models\Anggota;
+use App\Models\AnggotaPosisiKelompok;
 use App\Models\Jabatan;
 use App\Rules\IndonesianPhoneNumber;
 use Illuminate\Http\Request;
@@ -47,7 +48,7 @@ class AnggotaController extends Controller
             return DataTables::of($query)
                 ->filter(function ($query) use ($request) {
                     if ($request->filled('id_kelompok')) {
-                        $query->where('id_kelompok', $request->id_kelompok);
+                        $query->where('id_kelompok_final', $request->id_kelompok);
                     }
                     if ($request->filled('id_provinsi')) {
                         $query->where('id_provinsi', $request->id_provinsi);
@@ -109,7 +110,7 @@ class AnggotaController extends Controller
             'no_hp' => $no_hp
         ]);
         $validator = Validator::make($request->all(), [
-            'no_hp' => ['required', new IndonesianPhoneNumber]
+            'no_hp' => [new IndonesianPhoneNumber]
         ]);
         // $request->validate([
         //     'no_hp' => ['required', new IndonesianPhoneNumber]
@@ -145,19 +146,38 @@ class AnggotaController extends Controller
                     ];
                 }
             } else {
-                $save = Anggota::create([
-                    'id_kelompok' => $request->id_kelompok,
+                $cekData = Anggota::where([
                     'nik' => $request->nik,
                     'nama_anggota' => $request->nama_lengkap,
-                    'id_jabatan' => $request->id_jabatan,
                     'no_hp' => $no_hp,
-                    'id_tps' => $request->id_tps,
-                    'tingkat_dukungan' => $request->tingkat_dukungan,
                     'alamat' => $request->alamat,
                     'id_kelurahan' => $request->id_kelurahan,
-                    'crt_id_user' => (int) $idUser,
                 ]);
-                if ($save) {
+                if ($cekData->count() == 0) {
+                    $save = Anggota::create([
+                        'id_kelompok' => $request->id_kelompok,
+                        'nik' => $request->nik,
+                        'nama_anggota' => $request->nama_lengkap,
+                        'id_jabatan' => $request->id_jabatan,
+                        'no_hp' => $no_hp,
+                        'id_tps' => $request->id_tps,
+                        'tingkat_dukungan' => $request->tingkat_dukungan,
+                        'alamat' => $request->alamat,
+                        'id_kelurahan' => $request->id_kelurahan,
+                        'crt_id_user' => (int) $idUser,
+                    ]);
+                    $id_anggota = $save->id;
+                } else {
+                    $result_anggota = $cekData->first();
+                    $id_anggota = $result_anggota->id;
+                }
+                $saveAnggotaPosisi = AnggotaPosisiKelompok::create([
+                    'id_anggota' => $id_anggota,
+                    'id_kelompok' => $request->id_kelompok,
+                    'id_jabatan' => $request->id_jabatan,
+                    'crt_id_user' => (int) $idUser
+                ]);
+                if ($saveAnggotaPosisi) {
                     $response = [
                         'status' => true,
                     ];
@@ -178,6 +198,12 @@ class AnggotaController extends Controller
     public function show(string $id)
     {
         $result = DB::table(Anggota::$view)->where('id', $id)->first();
+        return $result;
+    }
+
+    public function checkByNIK(string $nik)
+    {
+        $result = DB::table(Anggota::$view)->where('nik', $nik)->first();
         return $result;
     }
 
@@ -223,9 +249,42 @@ class AnggotaController extends Controller
         return $response;
     }
 
+    public function deleteFromKelompok(string $id, string $id_kelompok)
+    {
+        $data = AnggotaPosisiKelompok::where(['id_anggota' => $id, 'id_kelompok' => $id_kelompok])->first();
+        if ($data == null) {
+            $data = Anggota::where(['id' => $id, 'id_kelompok' => $id_kelompok])->first();
+        }
+        if ($data != null) {
+            $delete = $data->delete();
+            if ($delete) {
+                $idUser = Auth::id();
+                $save = $data->update([
+                    'del_id_user' => (int) $idUser
+                ]);
+                $response = [
+                    'status' => true,
+                ];
+            } else {
+                $response = [
+                    'status' => false,
+                    'message' => 'Terjadi kesalahan saat menghapus data. Silahkan anda coba kembali.',
+                ];
+            }
+        } else {
+            $response = [
+                'status' => false,
+                'message' => 'Terjadi kesalahan saat menghapus data. Data tidak ditemukan. Silahkan anda coba kembali.',
+            ];
+        }
+
+
+        return $response;
+    }
+
     public function list(string $idKelompok)
     {
-        $result = DB::table(Anggota::$view)->where(['id_kelompok' => $idKelompok])->get();
+        $result = DB::table(Anggota::$view)->where(['id_kelompok_final' => $idKelompok])->get();
         return $result;
     }
 

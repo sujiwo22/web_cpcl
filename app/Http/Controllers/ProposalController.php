@@ -26,65 +26,127 @@ class ProposalController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
+            $sumber = $request->sumber;
             $query = DB::table(Proposal::$view)->select('*');
-            return DataTables::of($query)
-                ->filter(function ($query) use ($request) {
-                    if ($request->filled('tahun')) {
-                        $query->where('tahun', $request->tahun);
-                    }
-                    if ($request->filled('id_provinsi')) {
-                        $query->where('id_provinsi', $request->id_provinsi);
-                    }
-                    if ($request->filled('id_kota')) {
-                        $query->where('id_kota', $request->id_kota);
-                    }
-                    if ($request->filled('id_kecamatan')) {
-                        $query->where('id_kecamatan', $request->id_kecamatan);
-                    }
-                    if ($request->filled('id_kelurahan')) {
-                        $query->where('id_kelurahan', $request->id_kelurahan);
-                    }
-                    if ($request->filled('id_kelurahan')) {
-                        $query->where('id_kelurahan', $request->id_kelurahan);
-                    }
-                }, true)
-                ->addIndexColumn()
-                ->addColumn('action_button', function ($row) {
-                    return '<div class="btn-group">
+            if ($sumber == '') {
+                return DataTables::of($query)
+                    ->filter(function ($query) use ($request) {
+                        if ($request->filled('tahun')) {
+                            $query->where('tahun', $request->tahun);
+                        }
+                        if ($request->filled('id_provinsi')) {
+                            $query->where('id_provinsi', $request->id_provinsi);
+                        }
+                        if ($request->filled('id_kota')) {
+                            $query->where('id_kota', $request->id_kota);
+                        }
+                        if ($request->filled('id_kecamatan')) {
+                            $query->where('id_kecamatan', $request->id_kecamatan);
+                        }
+                        if ($request->filled('id_kelurahan')) {
+                            $query->where('id_kelurahan', $request->id_kelurahan);
+                        }
+                        if ($request->filled('id_kelompok')) {
+                            $query->where('id_kelompok', $request->id_kelompok);
+                        }
+                    }, true)
+                    ->addIndexColumn()
+                    ->addColumn('action_button', function ($row) {
+                        return '<div class="btn-group">
                         <a class="btn btn-sm btn-success" id="btnExcel" href="' . route('proposal.download_excel', $row->id) . '"><i class="fa fa-file-excel"></i></a>
                         <div class="btn btn-sm btn-primary" id="btnEdit" onclick="editData(' . $row->id . ')"><i class="fa fa-edit"></i></div>
                         <div class="btn btn-sm btn-warning" id="btnDelete" onclick="viewData(' . $row->id . ')"><i class="fa fa-bars"></i></div>
                         <div class="btn btn-sm btn-danger" id="btnDelete" onclick="deleteData(' . $row->id . ')"><i class="fa fa-times-circle"></i></div>
                     </div>';
-                })
-                ->addColumn('proposal_button', function ($row) {
-                    $file = $row->file;
-                    $exp = explode('/', $file);
-                    $file_name = $exp != null && count($exp) > 1 ? $exp[1] : '';
-                    $url = 'view-file/' . $file_name;
-                    $url2 = 'download-file/' . $file_name;
-                    if ($row->status_proposal == 'N') {
-                        return 'Tanpa Proposal';
-                    } else {
-
-                        if ($file_name == '') {
-                            return '<span class="text-default">File Not Found!</span>';
+                    })
+                    ->addColumn('proposal_button', function ($row) {
+                        $file = $row->file;
+                        $exp = explode('/', $file);
+                        $file_name = $exp != null && count($exp) > 1 ? $exp[1] : '';
+                        $url = 'view-file/' . $file_name;
+                        $url2 = 'download-file/' . $file_name;
+                        if ($row->status_proposal == 'N') {
+                            return 'Tanpa Proposal';
                         } else {
-                            $fileController = new FileController;
-                            $checkFile = $fileController->checkFile($file_name);
-                            if (!$checkFile) {
+
+                            if ($file_name == '') {
                                 return '<span class="text-default">File Not Found!</span>';
                             } else {
-                                return '<div class="btn-group">
+                                $fileController = new FileController;
+                                $checkFile = $fileController->checkFile($file_name);
+                                if (!$checkFile) {
+                                    return '<span class="text-default">File Not Found!</span>';
+                                } else {
+                                    return '<div class="btn-group">
                         <a class="btn btn-sm btn-primary" id="btnEdit" href="' . $url2 . '"><i class="fa fa-download"></i></a>
                         <a class="btn btn-sm btn-info" id="btnDelete" href="' . $url . '" target="_blank"><i class="fa fa-eye"></i></a>
                     </div>';
+                                }
                             }
                         }
-                    }
-                })
-                ->rawColumns(['action_button', 'proposal_button'])
-                ->make(true);
+                    })
+                    ->rawColumns(['action_button', 'proposal_button'])
+                    ->make(true);
+            } else {
+                return DataTables::of($query)
+                    ->filter(function ($query) use ($request) {
+                        if ($request->filled('tahun')) {
+                            $query->where('tahun', $request->tahun);
+                        }
+                        if ($request->filled('id_provinsi')) {
+                            $query->where('id_provinsi', $request->id_provinsi);
+                        }
+                        if ($request->filled('id_kota')) {
+                            $query->where('id_kota', $request->id_kota);
+                        }
+                        if ($request->filled('id_kecamatan')) {
+                            $query->where('id_kecamatan', $request->id_kecamatan);
+                        }
+                        if ($request->filled('id_kelurahan')) {
+                            $query->where('id_kelurahan', $request->id_kelurahan);
+                        }
+                        if ($request->filled('id_kelompok')) {
+                            $query->where('id_kelompok', $request->id_kelompok);
+                        }
+                    }, true)
+                    ->addIndexColumn()
+                    ->addColumn('action_button', function ($row) {
+                        return '<div class="btn-group">
+                        <a class="btn btn-sm btn-success" id="btnExcel" href="' . route('proposal.download_excel', $row->id) . '"><i class="fa fa-file-excel"></i></a>
+                        <div class="btn btn-sm btn-primary" id="btnEdit" onclick="editDataProposal(' . $row->id . ')"><i class="fa fa-edit"></i></div>
+                        <div class="btn btn-sm btn-warning" id="btnDelete" onclick="viewDataProposal(' . $row->id . ')"><i class="fa fa-bars"></i></div>
+                        <div class="btn btn-sm btn-danger" id="btnDelete" onclick="deleteDataProposal(' . $row->id . ')"><i class="fa fa-times-circle"></i></div>
+                    </div>';
+                    })
+                    ->addColumn('proposal_button', function ($row) {
+                        $file = $row->file;
+                        $exp = explode('/', $file);
+                        $file_name = $exp != null && count($exp) > 1 ? $exp[1] : '';
+                        $url = 'view-file/' . $file_name;
+                        $url2 = 'download-file/' . $file_name;
+                        if ($row->status_proposal == 'N') {
+                            return 'Tanpa Proposal';
+                        } else {
+
+                            if ($file_name == '') {
+                                return '<span class="text-default">File Not Found!</span>';
+                            } else {
+                                $fileController = new FileController;
+                                $checkFile = $fileController->checkFile($file_name);
+                                if (!$checkFile) {
+                                    return '<span class="text-default">File Not Found!</span>';
+                                } else {
+                                    return '<div class="btn-group">
+                        <a class="btn btn-sm btn-primary" id="btnEdit" href="' . $url2 . '"><i class="fa fa-download"></i></a>
+                        <a class="btn btn-sm btn-info" id="btnDelete" href="' . $url . '" target="_blank"><i class="fa fa-eye"></i></a>
+                    </div>';
+                                }
+                            }
+                        }
+                    })
+                    ->rawColumns(['action_button', 'proposal_button'])
+                    ->make(true);
+            }
         }
         $data['title'] = 'Proposal';
         $data['tahun_mulai'] = date('Y') - 2;
@@ -106,44 +168,185 @@ class ProposalController extends Controller
     public function store(Request $request)
     {
         $idUser = Auth::id();
-        $id = $request->id;
-        $act = $request->act;
-        $file = isset($request->file) ? $request->file : null;
+        $id = null;
+        if (isset($request->id)) {
+            $id = $request->id;
+            $source = 'proposal';
+        } elseif (isset($request->id_proposal)) {
+            $id = $request->id_proposal;
+            $source = 'kelompok';
+        } else {
+            $id = null;
+        }
+        $act = null;
+        if (isset($request->act)) {
+            $act = $request->act;
+            $source = 'proposal';
+        } elseif (isset($request->actProposal)) {
+            $act = $request->actProposal;
+            $source = 'kelompok';
+        } else {
+            $act = null;
+        }
+        $file = null;
+        $source = null;
+        if (isset($request->file)) {
+            $file = $request->file;
+            $source = 'proposal';
+        } elseif (isset($request->file_proposal)) {
+            $file = $request->file_proposal;
+            $source = 'kelompok';
+        } else {
+            $file = null;
+        }
         // if ($file != null) {
         // }
-        $kelompok = DB::table(Kelompok::$view)->where('id', $request->id_kelompok)->first();
+        $tahun = null;
+        if (isset($request->tahun)) {
+            $tahun = $request->tahun;
+        } elseif (isset($request->tahun_proposal)) {
+            $tahun = $request->tahun_proposal;
+        } else {
+            $tahun = null;
+        }
+        $status_proposal = null;
+        if (isset($request->status_proposal)) {
+            $status_proposal = $request->status_proposal;
+        } else {
+            $status_proposal = null;
+        }
+        // $status_proposal = $request->status_proposal;
+        $id_kelompok = null;
+        if (isset($request->id_kelompok)) {
+            $id_kelompok = $request->id_kelompok;
+        } elseif (isset($request->id_kelompok_proposal)) {
+            $id_kelompok = $request->id_kelompok_proposal;
+        } else {
+            $id_kelompok = null;
+        }
+        $nama_kelompok = null;
+        if (isset($request->nama_kelompok)) {
+            $nama_kelompok = $request->nama_kelompok;
+        } elseif (isset($request->nama_kelompok_proposal)) {
+            $nama_kelompok = $request->nama_kelompok_proposal;
+        } else {
+            $nama_kelompok = null;
+        }
+        $alamat_kelompok = null;
+        if (isset($request->alamat_kelompok)) {
+            $alamat_kelompok = $request->alamat_kelompok;
+        } elseif (isset($request->alamat_kelompok_proposal)) {
+            $alamat_kelompok = $request->alamat_kelompok_proposal;
+        } else {
+            $alamat_kelompok = null;
+        }
+        $id_program_alokasi = null;
+        if (isset($request->id_program_alokasi)) {
+            $id_program_alokasi = $request->id_program_alokasi;
+        } elseif (isset($request->id_program_alokasi_proposal)) {
+            $id_program_alokasi = $request->id_program_alokasi_proposal;
+        } else {
+            $id_program_alokasi = null;
+        }
+        $jenis_bantuan = null;
+        if (isset($request->jenis_bantuan)) {
+            $jenis_bantuan = $request->jenis_bantuan;
+        } elseif (isset($request->jenis_bantuan_proposal)) {
+            $jenis_bantuan = $request->jenis_bantuan_proposal;
+        } else {
+            $jenis_bantuan = null;
+        }
+        $jumlah_bantuan = null;
+        if (isset($request->jumlah_bantuan)) {
+            $jumlah_bantuan = $request->jumlah_bantuan;
+        } elseif (isset($request->jumlah_bantuan_proposal)) {
+            $jumlah_bantuan = $request->jumlah_bantuan_proposal;
+        } else {
+            $jumlah_bantuan = null;
+        }
+        $id_pic_penyuluh = null;
+        if (isset($request->id_pic_penyuluh)) {
+            $id_pic_penyuluh = $request->id_pic_penyuluh;
+        } elseif (isset($request->id_pic_penyuluh_proposal)) {
+            $id_pic_penyuluh = $request->id_pic_penyuluh_proposal;
+        } else {
+            $id_pic_penyuluh = null;
+        }
+        $nama_penyuluh = null;
+        if (isset($request->nama_penyuluh)) {
+            $nama_penyuluh = $request->nama_penyuluh;
+        } elseif (isset($request->nama_penyuluh_proposal)) {
+            $nama_penyuluh = $request->nama_penyuluh_proposal;
+        } else {
+            $nama_penyuluh = null;
+        }
+        $contact_person_penyuluh = null;
+        if (isset($request->contact_person_penyuluh)) {
+            $contact_person_penyuluh = $request->contact_person_penyuluh;
+        } elseif (isset($request->contact_person_penyuluh_proposal)) {
+            $contact_person_penyuluh = $request->contact_person_penyuluh_proposal;
+        } else {
+            $contact_person_penyuluh = null;
+        }
+        $id_pic_penanggung_jawab = null;
+        if (isset($request->id_pic_penanggung_jawab)) {
+            $id_pic_penanggung_jawab = $request->id_pic_penanggung_jawab;
+        } elseif (isset($request->id_pic_penanggung_jawab_proposal)) {
+            $id_pic_penanggung_jawab = $request->id_pic_penanggung_jawab_proposal;
+        } else {
+            $id_pic_penanggung_jawab = null;
+        }
+        $nama_penanggung_jawab = null;
+        if (isset($request->nama_penanggung_jawab)) {
+            $nama_penanggung_jawab = $request->nama_penanggung_jawab;
+        } elseif (isset($request->nama_penanggung_jawab_proposal)) {
+            $nama_penanggung_jawab = $request->nama_penanggung_jawab_proposal;
+        } else {
+            $nama_penanggung_jawab = null;
+        }
+        $contact_person_penanggung_jawab = null;
+        if (isset($request->contact_person_penanggung_jawab)) {
+            $contact_person_penanggung_jawab = $request->contact_person_penanggung_jawab;
+        } elseif (isset($request->contact_person_penanggung_jawab_proposal)) {
+            $contact_person_penanggung_jawab = $request->contact_person_penanggung_jawab_proposal;
+        } else {
+            $contact_person_penanggung_jawab = null;
+        }
+
         $data_processed = [
-            'tahun' => $request->tahun,
-            'status_proposal' => $request->status_proposal,
-            'id_kelompok' => $request->id_kelompok,
-            'nama_kelompok' => $request->nama_kelompok,
-            'alamat_kelompok' => $kelompok->alamat_lengkap_kelompok,
-            'id_program_alokasi' => $request->id_program_alokasi,
-            'jenis_bantuan' => $request->jenis_bantuan,
-            'jumlah_bantuan' => $request->jumlah_bantuan,
-            'id_pic_penyuluh' => $request->id_pic_penyuluh,
-            'nama_penyuluh' => $request->nama_penyuluh,
-            'contact_person_penyuluh' => $request->contact_person_penyuluh,
-            'id_pic_penanggung_jawab' => $request->id_pic_penanggung_jawab,
-            'nama_penanggung_jawab' => $request->nama_penanggung_jawab,
-            'contact_person_penanggung_jawab' => $request->contact_person_penanggung_jawab,
+            'tahun' => $tahun,
+            'status_proposal' => $status_proposal,
+            'id_kelompok' => $id_kelompok,
+            'nama_kelompok' => $nama_kelompok,
+            'alamat_kelompok' => $alamat_kelompok,
+            'id_program_alokasi' => $id_program_alokasi,
+            'jenis_bantuan' => $jenis_bantuan,
+            'jumlah_bantuan' => $jumlah_bantuan,
+            'id_pic_penyuluh' => $id_pic_penyuluh,
+            'nama_penyuluh' => $nama_penyuluh,
+            'contact_person_penyuluh' => $contact_person_penyuluh,
+            'id_pic_penanggung_jawab' => $id_pic_penanggung_jawab,
+            'nama_penanggung_jawab' => $nama_penanggung_jawab,
+            'contact_person_penanggung_jawab' => $contact_person_penanggung_jawab,
         ];
+        // echo json_encode($data_processed);
         $msg = null;
         if ($file != null) {
-            $validator = Validator::make($request->all(), [
-                'file' => 'required|mimes:jpg,jpeg,png,pdf|max:2048',
-            ]);
+            if ($source == 'proposal') {
+                $validator = Validator::make($request->all(), [
+                    'file' => 'required|mimes:jpg,jpeg,png,pdf|max:2048',
+                ]);
+                $msg = $validator->errors()->first('file');
+                $path = $request->file('file')->store('private_pdfs', 'local');
 
-            $msg = $validator->errors()->first('file');
-            // try {
-            // $validate = $request->validate([
-            //     'file' => 'required|mimes:jpg,jpeg,png,pdf|max:2048', // Example validation rules
-            // ]);
-            // } catch (Valida)
-            // $message = $validate->message();
-
-            $path = $request->file('file')->store('private_pdfs', 'local');
-
+                $data_processed['file'] = $path;
+            } elseif ($source == 'kelompok') {
+                $validator = Validator::make($request->all(), [
+                    'file_proposal' => 'required|mimes:jpg,jpeg,png,pdf|max:2048',
+                ]);
+                $msg = $validator->errors()->first('file_proposal');
+                $path = $request->file('file_proposal')->store('private_pdfs', 'local');
+            }
             $data_processed['file'] = $path;
         }
         if ($msg != null) {
@@ -154,7 +357,8 @@ class ProposalController extends Controller
         } else {
             if ($act == 'edit') {
                 $result = DB::table(Proposal::$view)->where(['id' => $id])->first();
-                if (($result->status_proposal == 'N' && $request->status_proposal == 'Y' && $file == null)) {
+                // echo json_encode($result);
+                if (($result->status_proposal == 'N' && $status_proposal == 'Y' && $file == null)) {
                     $response = [
                         'status' => false,
                         'message' => 'Silahkan upload file proposal.',
@@ -163,10 +367,10 @@ class ProposalController extends Controller
                     $data_processed['upd_id_user'] = $idUser;
                     $save = Proposal::where('id', $id)->update($data_processed);
                     if ($save) {
-                        $file = $result->file;
-                        $exp = explode('/', $file);
+                        $file_before = $result->file;
+                        $exp = explode('/', $file_before);
                         $file_name = $exp != null && count($exp) > 1 ? $exp[1] : '';
-                        if ($file_name != '' && $request->file != '') {
+                        if ($file_name != '' && $file != '') {
                             if (Storage::disk('local')->exists("private_pdfs/{$file_name}")) {
                                 Storage::disk('local')->delete("private_pdfs/{$file_name}");
                             }
@@ -182,7 +386,7 @@ class ProposalController extends Controller
                     }
                 }
             } else {
-                if ($request->status_proposal == 'Y' && $file == null) {
+                if ($status_proposal == 'Y' && $file == null) {
                     $response = [
                         'status' => false,
                         'message' => 'Silahkan upload file proposal.',
@@ -303,7 +507,7 @@ class ProposalController extends Controller
             $sheet->getStyle($col)->applyFromArray(getStyleFontHeaderTableBlue());
             $col_number++;
         }
-        $list_anggota = DB::table(Anggota::$view)->where('id_kelompok', $result->id_kelompok)->get();
+        $list_anggota = DB::table(Anggota::$view)->where('id_kelompok_final', $result->id_kelompok)->get();
         $data_anggota = [];
         $no = 0;
         foreach ($list_anggota as $la) {

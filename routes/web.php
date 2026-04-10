@@ -145,7 +145,9 @@ Route::middleware('auth')->group(function () {
     // Route::get('/kelompok_anggota_utama', [AnggotaController::class, 'index'])->name('kelompok_anggota');
     Route::post('/kelompok_anggota', [AnggotaController::class, 'store'])->name('kelompok_anggota.store');
     Route::get('/kelompok_anggota_show/{id}', [AnggotaController::class, 'show'])->name('kelompok_anggota.show');
+    Route::get('/kelompok_anggota_cek_nik/{id}', [AnggotaController::class, 'checkByNIK'])->name('kelompok_anggota.cek_nik');
     Route::delete('/kelompok_anggota/{id}', [AnggotaController::class, 'destroy'])->name('kelompok_anggota.destroy');
+    Route::delete('/kelompok_anggota_detail/{id}/{id_kelompok}', [AnggotaController::class, 'deleteFromKelompok'])->name('kelompok_anggota_detail.destroy');
     Route::get('/list_kelompok_anggota/{id}', [AnggotaController::class, 'list'])->name('kelompok_anggota.list');
     Route::post('/upload_data_anggota', [AnggotaController::class, 'previewDataExcel'])->name('kelompok_anggota.upload_data');
     Route::post('/upload_data_anggota_process', [AnggotaController::class, 'uploadDataExcel'])->name('kelompok_anggota.upload_data_process');

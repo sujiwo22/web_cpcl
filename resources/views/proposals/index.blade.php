@@ -384,7 +384,11 @@
 
 @section('javascript')
 <script type="text/javascript">
-    var table = $('#tableUserLevel').DataTable();
+    var table = $('#tableUserLevel').DataTable({
+        scrollX: true,
+        scrollY: '400px',
+        scrollCollapse: true,
+    });
     var tableKelompok = $('#tableKelompok').DataTable();
     var tableProgram = $('#tableProgram').DataTable();
     var tableAnggota = $('#tableListAnggota').DataTable();

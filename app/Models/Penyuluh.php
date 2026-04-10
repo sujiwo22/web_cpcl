@@ -5,17 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class AnggotaPosisiKelompok extends Model
+class Penyuluh extends Model
 {
     use SoftDeletes;
-    protected $table = 'anggota_posisi_kelompoks';
-    public static $view = 'anggota_posisi_kelompok_view';
+    protected $table = 'penyuluhs';
+    public static $view = 'penyuluh_view';
 
     protected $fillable = [
-        'id_anggota',
-        'id_kelompok',
-        'id_jabatan',
-        'status',
+        'nama_penyuluh',
+        'contact_person',
         'crt_id_user',
         'upd_id_user',
         'del_id_user'
