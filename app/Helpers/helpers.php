@@ -445,6 +445,10 @@ function formatIndoPhone($value)
         return '0' . substr($value_2, 2);
     }
 
+    if (str_starts_with($value_2, '8')) {
+        return '08' . substr($value_2, 1);
+    }
+
     return $value_2;
 }
 

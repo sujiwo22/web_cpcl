@@ -1,3 +1,53 @@
+<style>
+    .table-container {
+        max-height: 600px;
+        /* Set a fixed height to enable scrolling */
+        overflow-y: auto;
+        /* Add vertical scrollbar when content overflows */
+        width: 100%;
+        border: 1px solid #ccc;
+    }
+
+    .table-container table {
+        width: 100%;
+        border-collapse: collapse;
+        /* Collapse borders for a cleaner look */
+    }
+
+    .table-container th,
+    td {
+        padding: 10px;
+        text-align: left;
+        border: 1px solid #ddd;
+        background-color: #f9f9f9;
+        /* Add background color to prevent text overlap */
+    }
+
+    .table-container thead th {
+        position: sticky;
+        /* Make headers sticky */
+        z-index: 10;
+        /* Ensure headers appear above body content */
+    }
+
+    /* Define the top position for each header row */
+    .table-container thead tr:first-child th {
+        top: 0;
+        /* The first row sticks to the top of the container */
+    }
+
+    .table-container thead tr:nth-child(2) th {
+        /* The second row sticks below the first row. Adjust '42px' based on the actual height of the first row. */
+        top: 35px;
+    }
+
+    /* Repeat for additional header rows if necessary */
+
+    .table-container tbody {
+        /* You do not need "display: block" on tbody with this method,
+       which helps preserve default table layout and column alignment. */
+    }
+</style>
 @extends('layouts.app')
 
 @section('content')
@@ -170,24 +220,34 @@
                                         <div class="clearfix" style="float: right;">
                                             <div class="btn btn-success mb-1" id="btnAddProposal" onclick="addProposal()"><i class="fa fa-plus-circle"></i> Tambah Proposal</div>
                                         </div>
+                                        <!-- <div class="table-container"> -->
                                         <table class="table table-bordered nowrap" id="tableProposal">
                                             <thead>
                                                 <tr class="bg-primary">
-                                                    <th scope="col">No</th>
-                                                    <th scope="col" style="width: 20%">Actions</th>
-                                                    <th scope="col" style="width: 20%">Proposal</th>
-                                                    <th scope="col">Tahun</th>
-                                                    <th scope="col">Kementrian</th>
-                                                    <th scope="col">Jenis Bantuan</th>
-                                                    <th scope="col">Jml. Bantuan</th>
-                                                    <th scope="col">Created by</th>
-                                                    <th scope="col">Created at</th>
+                                                    <th scope="col" rowspan="2" style="vertical-align: middle; background-color: #007bff; color:#FFFFFF;" nowrap>No</th>
+                                                    <th scope="col" rowspan="2" style="vertical-align: middle; background-color: #007bff; color:#FFFFFF;" nowrap>Actions</th>
+                                                    <th scope="col" rowspan="2" style="vertical-align: middle; background-color: #007bff; color:#FFFFFF;" nowrap>Proposal</th>
+                                                    <th scope="col" rowspan="2" style="vertical-align: middle; background-color: #007bff; color:#FFFFFF;" nowrap>Tahun</th>
+                                                    <th scope="col" rowspan="2" style="vertical-align: middle; background-color: #007bff; color:#FFFFFF;" nowrap>Kementrian</th>
+                                                    <th scope="col" rowspan="2" style="vertical-align: middle; background-color: #007bff; color:#FFFFFF;" nowrap>Jenis Bantuan</th>
+                                                    <th scope="col" rowspan="2" style="vertical-align: middle; background-color: #007bff; color:#FFFFFF;" nowrap>Jml. Bantuan</th>
+                                                    <th scope="col" colspan="5" class="text-center" nowrap>STATUS</th>
+                                                    <th scope="col" rowspan="2" style="vertical-align: middle; background-color: #007bff; color:#FFFFFF;" nowrap>Created by</th>
+                                                    <th scope="col" rowspan="2" style="vertical-align: middle; background-color: #007bff; color:#FFFFFF;" nowrap>Created at</th>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="col" style=" background-color: #007bff; color:#FFFFFF;" nowrap>CPCL</th>
+                                                    <th scope="col" style=" background-color: #007bff; color:#FFFFFF;" nowrap>VERIFIKASI</th>
+                                                    <th scope="col" style=" background-color: #007bff; color:#FFFFFF;" nowrap>KONTRAK</th>
+                                                    <th scope="col" style=" background-color: #007bff; color:#FFFFFF;" nowrap>PENGIRIMAN</th>
+                                                    <th scope="col" style=" background-color: #007bff; color:#FFFFFF;" nowrap>DISTRIBUSI</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
 
                                             </tbody>
                                         </table>
+                                        <!-- </div> -->
                                     </div>
                                 </div>
                             </div>
@@ -687,6 +747,37 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="modalFormUpdate">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h4 class="modal-title"></h4>
+                <button aria-label="Close" class="close" data-dismiss="modal" type="button">
+                    <span aria-hidden="true">&times;</span></button>
+            </div>
+            <form data-toggle="validator" id="formCRUDUpdateStatus">
+                @csrf
+                <input id="code" name="code" type="hidden">
+                <input id="id_status" name="id_status" type="hidden">
+                <div class="modal-body">
+                    <div class="alert alert-warning d-none" id="failed-alert"></div>
+                    <div class="form-group">
+                        <label>Status *)</label>
+                        <select class="form-control" id="status" name="status"
+                            placeholder="Status" required></select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-default pull-left" data-dismiss="modal" type="button"><i
+                            class="fa fa-times-circle"></i> Close</button>
+                    <button class="btn btn-primary" id="saveBtnUpdateStatus" type="submit"><i class="fa fa-save"></i>
+                        Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 @endsection
 
 @section('javascript')
@@ -1032,6 +1123,55 @@
         });
     });
 
+    $('#formCRUDUpdateStatus').submit(function(e) {
+        e.preventDefault();
+
+        let formData = new FormData(this);
+        var act = $('#act').val();
+        var url;
+        url = "/update_status_proposal";
+        $(this).find('.error-text').text('');
+        $('#success-alert').addClass('d-none').text('');
+        $('#failed-alert').addClass('d-none').text('');
+
+        $.ajax({
+            method: 'POST',
+            url: url,
+            data: formData,
+            contentType: false,
+            processData: false,
+            beforeSend: function() {
+                $('#saveBtnUpdateStatus').attr('disabled', true);
+            },
+            success: function(data) {
+                $('#saveBtnUpdateStatus').attr('disabled', false);
+                if (data['status']) {
+                    $('#modalFormUpdate').modal('hide');
+                    $('#success-alert').removeClass('d-none').text("Data telah berhasil disimpan.");
+                    $('#' + data['code'] + data['id']).text(data['status_data']);
+                    $('#' + data['code'] + data['id']).removeClass('text-green');
+                    $('#' + data['code'] + data['id']).removeClass('text-red');
+                    $('#' + data['code'] + data['id']).removeClass('text-yellow');
+                    $('#' + data['code'] + data['id']).addClass(data['new_tl']);
+                    // table.ajax.reload(null, false);
+                } else {
+                    $('#failed-alert').removeClass('d-none').text(data['message']);
+                }
+            },
+            error: function(response) {
+                $('#saveBtnUpdateStatus').attr('disabled', false);
+                if (response.status === 422) {
+                    let errors = response.responseJSON.errors;
+                    $.each(errors, function(key, value) {
+                        $('.' + key + '_error').text(value[0]);
+                    });
+                } else {
+                    alert('Something went wrong. Please try again.');
+                }
+            },
+        });
+    });
+
     function processUpload() {
         const form = document.querySelector('#formUpload');
         let formData = new FormData(form);
@@ -1284,6 +1424,9 @@
         $('#modalFormUpload form')[0].reset();
         $('#modalFormUpload #id').val('');
         $('#modalFormUpload #act').val('save');
+        $('#modalFormUpload #failed-alert-upload').addClass('d-none');
+        $('#modalFormUpload #success-alert-upload').addClass('d-none');
+        $('#modalFormUpload #previewSec').html('');
     };
 
     function viewAnggota(id, nama) {
@@ -1409,6 +1552,21 @@
                     data: 'jumlah_bantuan'
                 },
                 {
+                    data: 'cpcl_column'
+                },
+                {
+                    data: 'verifikasi_column'
+                },
+                {
+                    data: 'kontrak_column'
+                },
+                {
+                    data: 'pengiriman_column'
+                },
+                {
+                    data: 'distribusi_column'
+                },
+                {
                     data: 'crt_user_name'
                 },
                 {
@@ -1416,7 +1574,7 @@
                 },
 
             ],
-            rowsGroup: [1]
+            // rowsGroup: [1]
         });
 
         $('#filter').click(function() {
@@ -1749,5 +1907,23 @@
             });
         }
     };
+
+    function updateStatus(code, id, status = null) {
+        $('#modalFormUpdate').modal('show');
+        $('#modalFormUpdate .modal-title').html('<i class="fa fa-plus-circle"></i> Update Status');
+        $('#modalFormUpdate form')[0].reset();
+        $('#modalFormUpdate #code').val(code);
+        $('#modalFormUpdate #id_status').val(id);
+        $('#status').empty();
+        if (code == 'cpcl') {
+            $('#status').append('<option value="BELUM LENGKAP">BELUM LENGKAP</option>');
+            $('#status').append('<option value="SUDAH LENGKAP">SUDAH LENGKAP</option>');
+        } else {
+            $('#status').append('<option value="BELUM">BELUM</option>');
+            $('#status').append('<option value="ON PROCESS">ON PROCESS</option>');
+            $('#status').append('<option value="SUDAH">SUDAH</option>');
+        }
+        $('#status').val(status).change();
+    }
 </script>
 @endsection

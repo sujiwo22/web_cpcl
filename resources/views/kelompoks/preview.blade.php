@@ -1,8 +1,28 @@
-<!-- <h4>Preview Data</h4> -->
+@if($sheetCount>1)
 <div class="row">
-    <div class="col-lg-3">NAMA KELOMPOK</div>
-    <div class="col-lg-9">: @php echo str_replace('"','',json_encode($sheetData[3]['C'])) @endphp</div>
+    <div class="col-lg-12">
+        <div class="alert alert-info alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <h5><i class="icon fas fa-info-circle"></i> Information!</h5>
+            File lebih dari 1 sheet. System tidak dapat menampilkan preview data lebih dari 1 kelompok.<br>
+            Berikut daftar kelompok dan jumlah anggota masing - masing kelompok yang akan diimport/upload:<br>
+            <ol type="number">
+                @foreach($hasil as $hs)
+                <li>{{ str_replace('"','',$hs['nama_kelompok']) }} ({{ $hs['jumlah_anggota'] }})</li>
+                @endforeach
+            </ol>
+            Apakah anda yakin akan meng-import data ini? Jika "iya", silahkan klik button <b>"Upload"</b> di bawah ini.
+        </div>
+    </div>
 </div>
+@else
+<!-- <h4>Preview Data</h4> -->
+@foreach($array_preview as $sp)
+<div class="row">
+    <div class="col-lg-12">{{ $sp }}</div>
+</div>
+@endforeach
+<!-- <div class="col-lg-9">: @php echo str_replace('"','',json_encode($sheetData[3]['C'])) @endphp</div>
 <div class="row">
     <div class="col-lg-3">ALAMAT</div>
     <div class="col-lg-9">: @php echo str_replace('"','',json_encode($sheetData[4]['C'])) @endphp</div>
@@ -50,7 +70,7 @@
 <div class="row">
     <div class="col-lg-3">KEMENTRIAN</div>
     <div class="col-lg-9">: @php echo str_replace('"','',json_encode($sheetData[15]['C'])) @endphp</div>
-</div>
+</div> -->
 <table class="table table-bordered table-striped nowrap table-sm" id="tablePreview" style="width: 100%;">
     <thead>
         <tr class="bg-primary">
@@ -77,3 +97,4 @@
         scrollCollapse: true,
     });
 </script>
+@endif

@@ -181,7 +181,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/proposal/{id}', [ProposalController::class, 'destroy'])->name('proposal.destroy');
     Route::get('/list_proposal', [ProposalController::class, 'list'])->name('proposal.list');
     Route::get('/proposal_generate_excel/{id}', [ProposalController::class, 'downloadExcel'])->name('proposal.download_excel');
-
+    Route::post('/update_status_proposal', [ProposalController::class, 'updateStatus'])->name('update_status_proposal.store');
 
     // Kegiatan Timeline
     Route::get('/kegiatan_timeline', [KegiatanTimelineController::class, 'index'])->name('kegiatan_timeline');

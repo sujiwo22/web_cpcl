@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Validator;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Illuminate\Support\Facades\Response;
+use Carbon\Carbon;
 
 class ProposalController extends Controller
 {
@@ -118,6 +119,21 @@ class ProposalController extends Controller
                         <div class="btn btn-sm btn-danger" id="btnDelete" onclick="deleteDataProposal(' . $row->id . ')"><i class="fa fa-times-circle"></i></div>
                     </div>';
                     })
+                    ->addColumn('cpcl_column', function ($row) {
+                        return '<span onclick="updateStatus(`cpcl`,' . $row->id . ',`' . $row->cpcl_status . '`)" class="' . tl_status($row->cpcl_status) . '" style="cursor: pointer;" id="cpcl' . $row->id . '"> ' . $row->cpcl_status . '</span>';
+                    })
+                    ->addColumn('verifikasi_column', function ($row) {
+                        return '<span onclick="updateStatus(`verifikasi`,' . $row->id . ',`' . $row->verifikasi_status . '`)" class="' . tl_status($row->verifikasi_status) . '" style="cursor: pointer;" id="verifikasi' . $row->id . '"> ' . $row->verifikasi_status . '</span>';
+                    })
+                    ->addColumn('kontrak_column', function ($row) {
+                        return '<span onclick="updateStatus(`kontrak`,' . $row->id . ',`' . $row->kontrak_status . '`)" class="' . tl_status($row->kontrak_status) . '" style="cursor: pointer;" id="kontrak' . $row->id . '"> ' . $row->kontrak_status . '</span>';
+                    })
+                    ->addColumn('pengiriman_column', function ($row) {
+                        return '<span onclick="updateStatus(`pengiriman`,' . $row->id . ',`' . $row->pengiriman_status . '`)" class="' . tl_status($row->pengiriman_status) . '" style="cursor: pointer;" id="pengiriman' . $row->id . '"> ' . $row->pengiriman_status . '</span>';
+                    })
+                    ->addColumn('distribusi_column', function ($row) {
+                        return '<span onclick="updateStatus(`distribusi`,' . $row->id . ',`' . $row->distribusi_status . '`)" class="' . tl_status($row->distribusi_status) . '" style="cursor: pointer;" id="distribusi' . $row->id . '"> ' . $row->distribusi_status . '</span>';
+                    })
                     ->addColumn('proposal_button', function ($row) {
                         $file = $row->file;
                         $exp = explode('/', $file);
@@ -144,7 +160,7 @@ class ProposalController extends Controller
                             }
                         }
                     })
-                    ->rawColumns(['action_button', 'proposal_button'])
+                    ->rawColumns(['action_button', 'proposal_button', 'cpcl_column', 'verifikasi_column', 'kontrak_column', 'pengiriman_column', 'distribusi_column'])
                     ->make(true);
             }
         }
@@ -552,5 +568,41 @@ class ProposalController extends Controller
         header('Content-Disposition: attachment; filename="' . $fileName . '"');
 
         $writer->save('php://output');
+    }
+
+    function updateStatus(Request $request)
+    {
+        $id = isset($request->id) ? $request->id : $request->id_status;
+        $code = $request->code;
+        $status = $request->status;
+        $data = Proposal::find($id);
+        $idUser = Auth::id();
+        if ($code == 'cpcl') {
+            $data_update['cpcl_status'] = $status;
+            $data_update['cpcl_upd_date'] = Carbon::now();
+            $data_update['cpcl_upd_id_user'] = $idUser;
+        } elseif ($code == 'verifikasi') {
+            $data_update['verifikasi_status'] = $status;
+            $data_update['verifikasi_upd_date'] = Carbon::now();
+            $data_update['verifikasi_upd_id_user'] = $idUser;
+        } elseif ($code == 'kontrak') {
+            $data_update['kontrak_status'] = $status;
+            $data_update['kontrak_upd_date'] = Carbon::now();
+            $data_update['kontrak_upd_id_user'] = $idUser;
+        } elseif ($code == 'pengiriman') {
+            $data_update['pengiriman_status'] = $status;
+            $data_update['pengiriman_upd_date'] = Carbon::now();
+            $data_update['pengiriman_upd_id_user'] = $idUser;
+        } elseif ($code == 'distribusi') {
+            $data_update['distribusi_status'] = $status;
+            $data_update['distribusi_upd_date'] = Carbon::now();
+            $data_update['distribusi_upd_id_user'] = $idUser;
+        }
+        $result = $data->update($data_update);
+        if ($result) {
+            return ['status' => true, 'code' => $code, 'id' => $id, 'status_data' => $status, 'new_tl' => tl_status($status)];
+        } else {
+            return ['status' => false];
+        }
     }
 }
