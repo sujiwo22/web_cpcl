@@ -32,7 +32,7 @@ class PicController extends Controller
                 ->make(true);
         }
 
-        $data['title'] = 'Penyuluh/PIC';
+        $data['title'] = 'PIC';
         return view('pics.index', $data);
     }
 

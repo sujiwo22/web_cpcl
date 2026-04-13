@@ -26,6 +26,7 @@ use App\Http\Controllers\PesanWAController;
 use App\Http\Controllers\PesanWaPengirimController;
 use App\Http\Controllers\ReportRekapUsulanProgramController;
 use App\Http\Controllers\MenuItemController;
+use App\Http\Controllers\PenyuluhController;
 use App\Mail\SendEmail;
 use App\Models\Anggota;
 use App\Models\Jabatan;
@@ -173,6 +174,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/pic/{id}', [PicController::class, 'show'])->name('pic.show');
     Route::delete('/pic/{id}', [PicController::class, 'destroy'])->name('pic.destroy');
     Route::get('/list_pic', [PicController::class, 'list'])->name('pic.list');
+
+    // Penyuluh
+    Route::get('/penyuluh', [PenyuluhController::class, 'index'])->name('penyuluh');
+    Route::post('/penyuluh', [PenyuluhController::class, 'store'])->name('penyuluh.store');
+    Route::get('/penyuluh/{id}', [PenyuluhController::class, 'show'])->name('penyuluh.show');
+    Route::delete('/penyuluh/{id}', [PenyuluhController::class, 'destroy'])->name('penyuluh.destroy');
+    Route::get('/list_penyuluh/{id}', [PenyuluhController::class, 'list'])->name('penyuluh.list');
 
     // Proposal
     Route::get('/proposal', [ProposalController::class, 'index'])->name('proposal');

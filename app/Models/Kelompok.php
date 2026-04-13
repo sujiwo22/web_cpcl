@@ -16,6 +16,7 @@ class Kelompok extends Model
         'nama_kelompok',
         'alamat',
         'id_kelurahan',
+        'id_pic',
         'no_hp',
         'penanggung_jawab',
         'crt_id_user',

@@ -157,42 +157,95 @@
                             <div class="card-body">
                                 <div class="tab-content" id="custom-tabs-one-tabContent">
                                     <div class="tab-pane fade show active" id="custom-tabs-one-home" role="tabpanel" aria-labelledby="custom-tabs-one-home-tab">
-                                        <div class="row">
-                                            <div class="col-lg-3">NAMA KELOMPOK</div>
-                                            <input type="hidden" id="id_kelompok_det">
-                                            <div class="col-lg-9"><span id="namaKelompokSpn"></span></div>
+                                        <input type="hidden" id="id_kelompok_det">
+                                        <input type="hidden" id="id_provinsi_det" value="13">
+                                        <div id="spcView">
+                                            <div class="row">
+                                                <div class="col-lg-3">NAMA KELOMPOK</div>
+                                                <div class="col-lg-9"><span id="namaKelompokSpn"></span></div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-lg-3">ALAMAT</div>
+                                                <div class="col-lg-9"><span id="alamatKelompokSpn"></span></div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-lg-3">KABUPATEN/KOTA</div>
+                                                <input type="hidden" id="id_kota_det">
+                                                <div class="col-lg-9"><span id="kotaSpn"></div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-lg-3">KECAMATAN</div>
+                                                <input type="hidden" id="id_kecamatan_det">
+                                                <div class="col-lg-9"><span id="kecamatanSpn"></div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-lg-3">KELURAHAN</div>
+                                                <input type="hidden" id="id_kelurahan_det">
+                                                <div class="col-lg-9"><span id="kelurahanSpn"></div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-lg-3">PENANGGUNG JAWAB</div>
+                                                <div class="col-lg-9"><span id="namaPenanggungJawabSpn"></div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-lg-3">NO. HP PENANGGUNG JAWAB</div>
+                                                <div class="col-lg-9"><span id="noHpPenanggungJawabSpn"></div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-lg-3">KEMENTRIAN</div>
+                                                <div class="col-lg-9"><span id="kementrianSpn"></div>
+                                            </div>
                                         </div>
-                                        <div class="row">
-                                            <div class="col-lg-3">ALAMAT</div>
-                                            <div class="col-lg-9"><span id="alamatKelompokSpn"></span></div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-lg-3">KABUPATEN/KOTA</div>
-                                            <input type="hidden" id="id_provinsi_det">
-                                            <input type="hidden" id="id_kota_det">
-                                            <div class="col-lg-9"><span id="kotaSpn"></div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-lg-3">KECAMATAN</div>
-                                            <input type="hidden" id="id_kecamatan_det">
-                                            <div class="col-lg-9"><span id="kecamatanSpn"></div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-lg-3">KELURAHAN</div>
-                                            <input type="hidden" id="id_kelurahan_det">
-                                            <div class="col-lg-9"><span id="kelurahanSpn"></div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-lg-3">PENANGGUNG JAWAB</div>
-                                            <div class="col-lg-9"><span id="namaPenanggungJawabSpn"></div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-lg-3">NO. HP PENANGGUNG JAWAB</div>
-                                            <div class="col-lg-9"><span id="noHpPenanggungJawabSpn"></div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-lg-3">KEMENTRIAN</div>
-                                            <div class="col-lg-9"><span id="kementrianSpn"></div>
+                                        <div id="spcEdit">
+                                            <form data-toggle="validator" id="formCRUD">
+                                                @csrf
+                                                <input id="id" name="id" type="hidden">
+                                                <input id="act" name="act" type="hidden">
+                                                <input type="hidden" id="id_provinsi" name="id_provinsi" value="13">
+                                                <div class="row">
+                                                    <div class="col-lg-3">NAMA KELOMPOK</div>
+                                                    <input autocomplete="off" class="form-control" id="nama_kelompok" name="nama_kelompok"
+                                                        placeholder="Nama Kelompok Masyarakat" required type="text">
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-lg-3">ALAMAT</div>
+                                                    <input autocomplete="off" class="form-control" id="alamat" name="alamat" placeholder="Alamat"
+                                                        required type="text">
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-lg-3">KABUPATEN/KOTA</div>
+                                                    <select name="id_kota" id="id_kota" class="form-control" aria-placeholder="Kota"
+                                                        required>
+                                                    </select>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-lg-3">KECAMATAN</div>
+                                                    <select name="id_kecamatan" id="id_kecamatan" class="form-control"
+                                                        aria-placeholder="Kecamatan" required>
+                                                    </select>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-lg-3">KELURAHAN</div>
+                                                    <select name="id_kelurahan" id="id_kelurahan" class="form-control"
+                                                        aria-placeholder="Kelurahan" required>
+                                                    </select>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-lg-3">PENANGGUNG JAWAB</div>
+                                                    <select name="id_pic" id="id_pic" class="form-control"></select>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-lg-3">NO. HP PENANGGUNG JAWAB</div>
+                                                    <input type="text" readonly class="form-control" id="pic_name" name="pic_name">
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-lg-3">KEMENTRIAN</div>
+                                                    <select name="id_kementrian" id="id_kementrian" class="form-control" aria-placeholder="Kementrian" required>
+                                                    </select>
+                                                </div>
+                                                <button class="btn btn-primary mt-2" id="saveBtn" type="submit"><i class="fa fa-save"></i>
+                                                    Save</button>
+                                            </form>
                                         </div>
                                     </div>
                                     <div class="tab-pane fade" id="custom-tabs-one-profile" role="tabpanel" aria-labelledby="custom-tabs-one-profile-tab">
@@ -203,6 +256,7 @@
                                             <thead>
                                                 <tr class="bg-primary">
                                                     <th>No</th>
+                                                    <th>Action</th>
                                                     <th>NIK</th>
                                                     <th>Nama Lengkap</th>
                                                     <th>Jabatan</th>
@@ -258,7 +312,7 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="modalForm">
+<!-- <div class="modal fade" id="modalForm">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header bg-primary">
@@ -344,7 +398,7 @@
             </form>
         </div>
     </div>
-</div>
+</div> -->
 
 <div class="modal fade" id="modalFormUpload">
     <div class="modal-dialog modal-lg">
@@ -857,9 +911,9 @@
                             $('#no_hp_anggota').val(data.no_hp);
                         } else {
                             var id_provinsi = $('#id_provinsi_det').val();
-                            var id_kota = $('#id_kota_det').val();
-                            var id_kecamatan = $('#id_kecamatan_det').val();
-                            var id_kelurahan = $('#id_kelurahan_det').val();
+                            var id_kota = $('#id_kota').val();
+                            var id_kecamatan = $('#id_kecamatan').val();
+                            var id_kelurahan = $('#id_kelurahan').val();
                             list_provinsi('id_provinsi_anggota', id_provinsi);
                             list_kota('id_kota_anggota', id_provinsi, id_kota);
                             list_kecamatan('id_kecamatan_anggota', id_kota, id_kecamatan);
@@ -901,6 +955,10 @@
             }
         });
         // End Form
+
+        $('#id_pic').on('change', function() {
+            detailPIC('id_pic', null, 'pic_name');
+        })
     });
 
     $('#formCRUD').submit(function(e) {
@@ -924,9 +982,11 @@
             processData: false,
             success: function(data) {
                 if (data['status']) {
-                    $('#modalForm').modal('hide');
+                    $('#id_kelompok_det').val(data['id_data']);
+                    $('#spaceForDetail #id').val(data['id_data']);
+                    $('#spaceForDetail #act').val('edit');
                     $('#success-alert').removeClass('d-none').text("Data telah berhasil disimpan.");
-                    table.ajax.reload(null, false);
+                    // table.ajax.reload(null, false);
                 } else {
                     $('#failed-alert').removeClass('d-none').text(data['message']);
                 }
@@ -1050,7 +1110,8 @@
                 if (data['status']) {
                     $('#modalFormAddAnggota').modal('hide');
                     $('#success-alert').removeClass('d-none').text("Data telah berhasil disimpan.");
-                    tableAnggota.ajax.reload(null, false);
+                    // tableAnggota.ajax.reload(null, false);
+                    viewAnggota(id_kelompok_anggota);
                 } else {
                     $('#failed-alert').removeClass('d-none').text(data['message']);
                 }
@@ -1086,6 +1147,7 @@
 
         $('#saveBtnProposal').attr('disabled', true);
 
+        var id_kelompok_proposal = $('#id_kelompok_proposal').val();
         $.ajax({
             method: 'POST',
             url: url,
@@ -1099,7 +1161,8 @@
                     $('#success-alert').removeClass('d-none').text("Data telah berhasil disimpan.");
                     $('#success-alert-proposal').removeClass('d-none').text("Data telah berhasil disimpan.");
                     $('#failed-alert-proposal').addClass('d-none').text('');
-                    tableProposal.ajax.reload(null, false);
+                    ajaxListProposal(id_kelompok_proposal);
+                    // tableProposal.ajax.reload(null, false);
                 } else {
                     $('#failed-alert-proposal').removeClass('d-none').text(data['message']);
                 }
@@ -1225,13 +1288,35 @@
     }
 
     function addForm() {
-        $('#modalForm').modal('show');
-        $('#modalForm .modal-title').html('<i class="fa fa-plus-circle"></i> Add Data');
-        $('#modalForm form')[0].reset();
-        $('#modalForm #id').val('');
-        $('#modalForm #act').val('save');
+        // $('#modalForm').modal('show');
+        // $('#modalForm .modal-title').html('<i class="fa fa-plus-circle"></i> Add Data');
+        $('#id_kelompok_det').val('');
+        $('#spaceFrontTable').addClass('d-none');
+        $('#spaceForDetail').removeClass('d-none');
+        $('#spcView').addClass('d-none');
+        $('#spcEdit').removeClass('d-none');
+        $('#spaceForDetail form')[0].reset();
+        $('#spaceForDetail #id').val('');
+        $('#spaceForDetail #act').val('save');
+        tableAnggota.destroy();
+        tableAnggota = $('#tableAnggota').DataTable();
+        tableAnggota.clear();
+        tableAnggota.draw();
+        tableProposal.destroy();
+        tableProposal = $('#tableProposal').DataTable();
+        tableProposal.clear();
+        tableProposal.draw();
+        // viewAnggota(null,null);
+        // tableAnggota.destroy();
+        // tableAnggota = $('#tableAnggota').DataTable({
+        //     scrollX: true,
+        //     scrollY: '400px',
+        //     scrollCollapse: true
+        // });
+        // tableProposal.destroy();
         var id_kemn = $('#id_kementrian_filter').val();
-        var id_prov = $('#id_provinsi_filter').val();
+        // var id_prov = $('#id_provinsi_filter').val();
+        var id_prov = 13;
         var id_kota = $('#id_kota_filter').val();
         var id_kec = $('#id_kecamatan_filter').val();
         var id_kel = $('#id_kelurahan_filter').val();
@@ -1241,6 +1326,7 @@
         list_kota('id_kota', id_prov != null ? id_prov : null, id_kota != null ? id_kota : null);
         list_kecamatan('id_kecamatan', id_kota != null ? id_kota : null, id_kec != null ? id_kec : null);
         list_kelurahan('id_kelurahan', id_kec != null ? id_kec : null, id_kel != null ? id_kel : null);
+        list_pic('id_pic');
 
     };
 
@@ -1277,11 +1363,19 @@
     }
 
     function editData(id) {
-        $('#modalForm').modal('show');
-        $('#modalForm .modal-title').html('<i class="fa fa-edit"></i> Edit Data');
-        $('#modalForm form')[0].reset();
-        $('#modalForm #id').val(id);
-        $('#modalForm #act').val('edit');
+        // $('#modalForm').modal('show');
+        // $('#modalForm .modal-title').html('<i class="fa fa-edit"></i> Edit Data');
+        // $('#modalForm form')[0].reset();
+        // $('#modalForm #id').val(id);
+        // $('#modalForm #act').val('edit');
+        $('#id_kelompok_det').val(id);
+        $('#spaceFrontTable').addClass('d-none');
+        $('#spaceForDetail').removeClass('d-none');
+        $('#spcView').addClass('d-none');
+        $('#spcEdit').removeClass('d-none');
+        $('#spaceForDetail form')[0].reset();
+        $('#spaceForDetail #id').val(id);
+        $('#spaceForDetail #act').val('edit');
         var url = "{{ route('kelompok_daftar.show', ':id') }}";
         url = url.replace(':id', id);
         $.ajax({
@@ -1290,14 +1384,17 @@
             success: function(data) {
                 console.log(data);
                 list_kementrian('id_kementrian', data.id_kementrian);
-                list_provinsi('id_provinsi', data.id_provinsi);
+                // list_provinsi('id_provinsi', data.id_provinsi);
                 list_kota('id_kota', data.id_provinsi, data.id_kota);
                 list_kecamatan('id_kecamatan', data.id_kota, data.id_kecamatan);
                 list_kelurahan('id_kelurahan', data.id_kecamatan, data.id_kelurahan);
+                list_pic('id_pic', data.id_pic);
                 $('#nama_kelompok').val(data.nama_kelompok);
                 $('#alamat').val(data.alamat);
-                $('#penanggung_jawab').val(data.penanggung_jawab);
-                $('#no_hp').val(data.no_hp);
+                // $('#penanggung_jawab').val(data.penanggung_jawab);
+                $('#pic_name').val(data.no_hp);
+                viewAnggota(data.id);
+                ajaxListProposal(data.id);
             },
             error: function(response) {
                 alert('Something went wrong. Please try again.');
@@ -1429,13 +1526,13 @@
         $('#modalFormUpload #previewSec').html('');
     };
 
-    function viewAnggota(id, nama) {
-        $('#spaceFrontTable').addClass('d-none');
-        $('#spaceForDetail').removeClass('d-none');
+    function viewAnggota(id) {
+        // $('#spaceFrontTable').addClass('d-none');
+        // $('#spaceForDetail').removeClass('d-none');
         // $('#modalFormAnggota').modal('show');
         // $('#modalFormAnggota .modal-title').html('<i class="fa fa-list"></i> Detail Kelompok ' + nama);
-        viewDetailKelompok(id);
-        ajaxListProposal(id);
+        // viewDetailKelompok(id);
+        // ajaxListProposal(id);
         tableAnggota.destroy();
         tableAnggota = $('#tableAnggota').DataTable({
             processing: true,
@@ -1447,10 +1544,16 @@
                 url: "{{ url('kelompok_anggota') }}",
                 data: function(d) {
                     d.id_kelompok = id;
+                    d.sumber = 'kelompok';
                 }
             },
             columns: [{
                     data: 'DT_RowIndex',
+                    orderable: false,
+                    searchable: false
+                },
+                {
+                    data: 'action_button',
                     orderable: false,
                     searchable: false
                 },
@@ -1501,12 +1604,21 @@
 
     function viewTableAnggota() {
         // console.log('Detail.....');
-        tableAnggota.ajax.reload(null, false);
+        var id_kelompok = $('#id_kelompok_det').val();
+        if (id_kelompok != '') {
+            viewAnggota(id_kelompok);
+            // ajaxListAnggota(id_kelompok);
+            // tableAnggota.ajax.reload(null, false);
+        }
     }
 
     function viewTableProposal() {
         // console.log('Detail.....');
-        tableProposal.ajax.reload(null, false);
+        var id_kelompok = $('#id_kelompok_det').val();
+        if (id_kelompok != '') {
+            ajaxListProposal(id_kelompok);
+        }
+        // tableProposal.ajax.reload(null, false);
     }
 
     function ajaxListProposal(id_kelompok) {
@@ -1591,24 +1703,29 @@
     }
 
     function addAnggota() {
-        $('#modalFormAddAnggota').modal('show');
-        $('#modalFormAddAnggota .modal-title').html('<i class="fa fa-plus-circle"></i> Add Data');
-        $('#modalFormAddAnggota form')[0].reset();
-        $('#modalFormAddAnggota #id').val('');
-        $('#modalFormAddAnggota #act').val('save');
-        var id_kelmpk = $('#id_kelompok_det').val();
-        var id_prov = $('#id_provinsi_det').val();
-        var id_kota = $('#id_kota_det').val();
-        var id_kec = $('#id_kecamatan_det').val();
-        var id_kel = $('#id_kelurahan_det').val();
-        $('#id_kelompok_anggota').val(id_kelmpk);
-        list_provinsi('id_provinsi_anggota', id_prov != null ? id_prov : null);
-        list_kota('id_kota_anggota', id_prov != null ? id_prov : null, id_kota != null ? id_kota : null);
-        list_kecamatan('id_kecamatan_anggota', id_kota != null ? id_kota : null, id_kec != null ? id_kec : null);
-        list_kelurahan('id_kelurahan_anggota', id_kec != null ? id_kec : null, id_kel != null ? id_kel : null);
-        list_kelompok('id_kelompok_anggota', id_kel != null ? id_kel : null, id_kelmpk != null ? id_kelmpk : null);
-        list_jabatan('id_jabatan_anggota');
-        list_tps('id_tps_anggota');
+        var id_kelompok = $('#id_kelompok_det').val();
+        if (id_kelompok == '') {
+            alert("Silahkan simpan data kelompok masyarakat terlebih dahulu.");
+        } else {
+            $('#modalFormAddAnggota').modal('show');
+            $('#modalFormAddAnggota .modal-title').html('<i class="fa fa-plus-circle"></i> Add Data');
+            $('#modalFormAddAnggota form')[0].reset();
+            $('#modalFormAddAnggota #id').val('');
+            $('#modalFormAddAnggota #act').val('save');
+            var id_kelmpk = $('#id_kelompok_det').val();
+            var id_prov = $('#id_provinsi_det').val();
+            var id_kota = $('#id_kota').val();
+            var id_kec = $('#id_kecamatan').val();
+            var id_kel = $('#id_kelurahan').val();
+            $('#id_kelompok_anggota').val(id_kelmpk);
+            list_provinsi('id_provinsi_anggota', id_prov != null ? id_prov : null);
+            list_kota('id_kota_anggota', id_prov != null ? id_prov : null, id_kota != null ? id_kota : null);
+            list_kecamatan('id_kecamatan_anggota', id_kota != null ? id_kota : null, id_kec != null ? id_kec : null);
+            list_kelurahan('id_kelurahan_anggota', id_kec != null ? id_kec : null, id_kel != null ? id_kel : null);
+            list_kelompok('id_kelompok_anggota', id_kel != null ? id_kel : null, id_kelmpk != null ? id_kelmpk : null);
+            list_jabatan('id_jabatan_anggota');
+            list_tps('id_tps_anggota');
+        }
     };
 
     function cariProgram() {
@@ -1649,7 +1766,6 @@
                     searchable: false
                 },
                 {
-                    name: 'col_kementrian',
                     data: 'nama_kementrian'
                 },
                 {
@@ -1699,29 +1815,34 @@
     }
 
     function addProposal() {
-        $('#modalFormProposal').modal('show');
-        $('#modalFormProposal .modal-title').html('<i class="fa fa-plus-circle"></i> Add Data');
-        $('#modalFormProposal form')[0].reset();
-        $('#modalFormProposal #id').val('');
-        $('#modalFormProposal #nama_kelompok_span').text('');
-        $('#modalFormProposal #jenis_bantuan_span').text('');
-        $('#modalFormProposal #actProposal').val('save');
         var id_kelompok = $('#id_kelompok_det').val();
-        var nama_kelompok = $('#namaKelompokSpn').text();
-        var alamat_kelompok = $('#alamatKelompokSpn').text();
-        // var tahun = $('#tahun_filter').val();
-        const currentYear = new Date().getFullYear();
-        $('#tahun_proposal').val(currentYear);
-        $('#id_kelompok_proposal').val(id_kelompok);
-        $('#nama_kelompok_span').text(nama_kelompok);
-        $('#nama_kelompok_proposal').val(nama_kelompok);
-        $('#alamat_kelompok_proposal').val(alamat_kelompok);
-        list_pic('id_pic_penyuluh_proposal');
-        list_pic('id_pic_penanggung_jawab_proposal');
-        $('#txtSmall').addClass('d-none');
+        if (id_kelompok == '') {
+            alert("Silahkan simpan data kelompok masyarakat terlebih dahulu.");
+        } else {
+            $('#modalFormProposal').modal('show');
+            $('#modalFormProposal .modal-title').html('<i class="fa fa-plus-circle"></i> Add Data');
+            $('#modalFormProposal form')[0].reset();
+            $('#modalFormProposal #id').val('');
+            $('#modalFormProposal #nama_kelompok_span').text('');
+            $('#modalFormProposal #jenis_bantuan_span').text('');
+            $('#modalFormProposal #actProposal').val('save');
+            var id_kelompok = $('#id_kelompok_det').val();
+            var nama_kelompok = $('#namaKelompokSpn').text();
+            var alamat_kelompok = $('#alamatKelompokSpn').text();
+            // var tahun = $('#tahun_filter').val();
+            const currentYear = new Date().getFullYear();
+            $('#tahun_proposal').val(currentYear);
+            $('#id_kelompok_proposal').val(id_kelompok);
+            $('#nama_kelompok_span').text(nama_kelompok);
+            $('#nama_kelompok_proposal').val(nama_kelompok);
+            $('#alamat_kelompok_proposal').val(alamat_kelompok);
+            list_pic('id_pic_penyuluh_proposal');
+            list_pic('id_pic_penanggung_jawab_proposal');
+            $('#txtSmall').addClass('d-none');
+        }
     };
 
-    function detailPIC(obj_id, obj_name, obj_cp) {
+    function detailPIC(obj_id, obj_name = null, obj_cp = null) {
         var id = $('#' + obj_id).val();
         var url = "{{ route('pic.show', ':id') }}";
         url = url.replace(':id', id);
@@ -1730,8 +1851,12 @@
             url: url,
             success: function(data) {
                 console.log(data);
-                $('#' + obj_name).val(data.nama_pic);
-                $('#' + obj_cp).val(data.contact_person);
+                if (obj_name != null) {
+                    $('#' + obj_name).val(data.nama_pic);
+                }
+                if (obj_cp != null) {
+                    $('#' + obj_cp).val(data.contact_person);
+                }
             },
             error: function(response) {
                 alert('Something went wrong. Please try again.');
@@ -1925,5 +2050,66 @@
         }
         $('#status').val(status).change();
     }
+
+    function editAnggota(id) {
+        $('#modalFormAddAnggota').modal('show');
+        $('#modalFormAddAnggota .modal-title').html('<i class="fa fa-edit"></i> Edit Data');
+        $('#modalFormAddAnggota form')[0].reset();
+        $('#modalFormAddAnggota #id').val(id);
+        $('#modalFormAddAnggota #act').val('edit');
+        var url = "{{ route('kelompok_anggota.show', ':id') }}";
+        url = url.replace(':id', id);
+        $.ajax({
+            method: 'GET',
+            url: url,
+            success: function(data) {
+                console.log(data);
+                // $('#id').val(data.id);
+                $('#nama_kelompok_anggota').text(data.nama_kelompok);
+                $('#id_kelompok_anggota').val(data.id_kelompok);
+                list_provinsi('id_provinsi_anggota', data.id_provinsi);
+                list_kota('id_kota_anggota', data.id_provinsi, data.id_kota);
+                list_kecamatan('id_kecamatan_anggota', data.id_kota, data.id_kecamatan);
+                list_kelurahan('id_kelurahan_anggota', data.id_kecamatan, data.id_kelurahan);
+                list_tps('id_tps_anggota', data.id_kelurahan, data.id_tps);
+                list_jabatan('id_jabatan_anggota', data.id_jabatan);
+                $('#nama_lengkap_anggota').val(data.nama_anggota);
+                $('#alamat_anggota').val(data.alamat);
+                $('#nik_anggota').val(data.nik);
+                $('#no_hp_anggota').val(data.no_hp);
+            },
+            error: function(response) {
+                alert('Something went wrong. Please try again.');
+            },
+            complete: function() {
+                // Re-enable button
+                $('#saveBtn').attr('disabled', false);
+            }
+        });
+    };
+
+    function deleteAnggota(id) {
+        if (confirm("Apakah anda yakin akan menghapus data ini?")) {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            var url = "{{ route('kelompok_anggota.destroy', ':id') }}";
+            url = url.replace(':id', id);
+            $.ajax({
+                method: 'delete',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken
+                },
+                url: url,
+                success: function(data) {
+                    // table.ajax.reload(null, false);
+                    var id_kelompok = $('#id_kelompok_ket').val();
+                    viewAnggota(id_kelompok);
+                },
+                error: function(response) {
+                    alert('Something went wrong. Please try again.');
+
+                }
+            });
+        }
+    };
 </script>
 @endsection

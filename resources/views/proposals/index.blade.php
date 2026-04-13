@@ -943,7 +943,6 @@
                     searchable: false
                 },
                 {
-                    name: 'col_kementrian',
                     data: 'nama_kementrian'
                 },
                 {

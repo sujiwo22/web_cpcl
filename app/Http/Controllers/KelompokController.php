@@ -84,8 +84,8 @@ class KelompokController extends Controller
                     ->addIndexColumn()
                     ->addColumn('action_button', function ($row) {
                         // <div class="btn btn-sm btn-warning" id="btnAnggota" onclick="viewAnggota(' . $row->id . ',`' . $row->nama_kelompok . '`)"><i class="fa fa-users"></i></div>
+                        // <div class="btn btn-sm btn-info" id="btnDetail" onclick="viewAnggota(' . $row->id . ',`' . $row->nama_kelompok . '`)"><i class="fa fa-list"></i></div>
                         return '<div class="btn-group center">
-                        <div class="btn btn-sm btn-info" id="btnDetail" onclick="viewAnggota(' . $row->id . ',`' . $row->nama_kelompok . '`)"><i class="fa fa-list"></i></div>
                         <div class="btn btn-sm btn-success" id="btnEdit" onclick="editData(' . $row->id . ')"><i class="fa fa-edit"></i></div>
                         <div class="btn btn-sm btn-danger" id="btnDelete" onclick="deleteData(' . $row->id . ')"><i class="fa fa-times-circle"></i></div>
                     </div>';
@@ -117,13 +117,15 @@ class KelompokController extends Controller
         $idUser = Auth::id();
         $id = $request->id;
         $act = $request->act;
+        $pic_detail = Pic::find($request->id_pic);
         $data_save = [
             'id_kementrian' => $request->id_kementrian,
             'id_kelurahan' => $request->id_kelurahan,
             'nama_kelompok' => $request->nama_kelompok,
             'alamat' => $request->alamat,
-            'no_hp' => $request->no_hp,
-            'penanggung_jawab' => $request->penanggung_jawab,
+            'id_pic' => $request->id_pic,
+            'no_hp' => $pic_detail->contact_person,
+            'penanggung_jawab' => $pic_detail->nama_pic,
         ];
         if ($act == 'edit') {
             $data = Kelompok::find($id);
@@ -132,6 +134,7 @@ class KelompokController extends Controller
             if ($save) {
                 $response = [
                     'status' => true,
+                    'id_data' => $id
                 ];
             } else {
                 $response = [
@@ -145,11 +148,13 @@ class KelompokController extends Controller
             if ($save) {
                 $response = [
                     'status' => true,
+                    'id_data' => $save->id
                 ];
             } else {
                 $response = [
                     'status' => false,
                     'message' => 'Terjadi kesalahan saat menyimpan data. Silahkan anda coba kembali.',
+
                 ];
             }
         }
@@ -531,21 +536,21 @@ class KelompokController extends Controller
                         $array_preview[] = null;
                     }
 
-                    $nama_kelompok = $array_preview[0]; //str_replace('"', '', json_encode($sheetData[3]['C']));
-                    $alamat = $array_preview[1]; // str_replace('"', '', json_encode($sheetData[4]['C']));
-                    $kota = $array_preview[2]; // str_replace('"', '', json_encode($sheetData[5]['C']));
-                    $kecamatan = $array_preview[3]; // str_replace('"', '', json_encode($sheetData[6]['C']));
-                    $kelurahan = $array_preview[4]; // str_replace('"', '', json_encode($sheetData[7]['C']));
-                    $jenis_bantuan = $array_preview[5]; // str_replace('"', '', json_encode($sheetData[8]['C']));
+                    $nama_kelompok = trim($array_preview[0]); //str_replace('"', '', json_encode($sheetData[3]['C']));
+                    $alamat = trim($array_preview[1]); // str_replace('"', '', json_encode($sheetData[4]['C']));
+                    $kota = trim($array_preview[2]); // str_replace('"', '', json_encode($sheetData[5]['C']));
+                    $kecamatan = trim($array_preview[3]); // str_replace('"', '', json_encode($sheetData[6]['C']));
+                    $kelurahan = trim($array_preview[4]); // str_replace('"', '', json_encode($sheetData[7]['C']));
+                    $jenis_bantuan = trim($array_preview[5]); // str_replace('"', '', json_encode($sheetData[8]['C']));
                     $jBantuan = $array_preview[6];
                     $expJml = explode(' ', $jBantuan);
-                    $jumlah_bantuan = $expJml[0]; // str_replace('"', '', json_encode($sheetData[9]['C']));
-                    $tahun_bantuan = $array_preview[7]; // str_replace('"', '', json_encode($sheetData[10]['C']));
-                    $nama_penyuluh = $array_preview[8]; // str_replace('"', '', json_encode($sheetData[11]['C']));
-                    $no_hp_penyuluh = $array_preview[9]; // preg_replace('/[^a-zA-Z0-9]/', '', json_encode($sheetData[12]['C']));
-                    $penanggung_jawab = $array_preview[10]; // str_replace('"', '', json_encode($sheetData[13]['C']));
-                    $no_hp_penanggung_jawab = $array_preview[10]; // preg_replace('/[^a-zA-Z0-9]/', '', json_encode($sheetData[14]['C']));
-                    $kementrian = $array_preview[12]; // str_replace('"', '', json_encode($sheetData[15]['C']));
+                    $jumlah_bantuan = trim($expJml[0]); // str_replace('"', '', json_encode($sheetData[9]['C']));
+                    $tahun_bantuan = trim($array_preview[7]); // str_replace('"', '', json_encode($sheetData[10]['C']));
+                    $nama_penyuluh = trim($array_preview[8]); // str_replace('"', '', json_encode($sheetData[11]['C']));
+                    $no_hp_penyuluh = trim($array_preview[9]); // preg_replace('/[^a-zA-Z0-9]/', '', json_encode($sheetData[12]['C']));
+                    $penanggung_jawab = trim($array_preview[10]); // str_replace('"', '', json_encode($sheetData[13]['C']));
+                    $no_hp_penanggung_jawab = trim($array_preview[10]); // preg_replace('/[^a-zA-Z0-9]/', '', json_encode($sheetData[14]['C']));
+                    $kementrian = trim($array_preview[12]); // str_replace('"', '', json_encode($sheetData[15]['C']));
 
                     $kota = validasiKabKota($kota);
                     $error_kota = false;
@@ -646,7 +651,7 @@ class KelompokController extends Controller
                     //     ];
                     // } else {
                     // Validasi Nama Program/Bantuan
-                    $cekBantuan = Program::where('nama_program');
+                    $cekBantuan = Program::where('nama_program', $jenis_bantuan);
                     if ($cekBantuan->count() == 0) {
                         $error_jenis_bantuan = true;
                         $save_program = Program::create([

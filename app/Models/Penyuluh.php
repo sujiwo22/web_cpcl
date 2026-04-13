@@ -12,6 +12,7 @@ class Penyuluh extends Model
     public static $view = 'penyuluh_view';
 
     protected $fillable = [
+        'id_kementrian',
         'nama_penyuluh',
         'contact_person',
         'crt_id_user',
